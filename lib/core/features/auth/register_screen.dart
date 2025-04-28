@@ -439,9 +439,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                               isLoading = true;
                                             });
                                             try {
-                                              print(
-                                                'Attempting to register...',
-                                              );
+                                              
                                               await authProvider.registerUser(
                                                 fullNameController
                                                         .text
@@ -458,8 +456,30 @@ class _RegisterScreenState extends State<RegisterScreen>
                                               // Navigate if there's no error (AuthProvider sets errorMessage if failed)
                                               if (authProvider.errorMessage ==
                                                   null) {
-                                                print(
-                                                  'Registration successful, navigating to login...',
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    backgroundColor:
+                                                        Colors.green,
+                                                    content: Row(
+                                                      children: const [
+                                                        Icon(
+                                                          Icons.check_circle,
+                                                          color: Colors.white,
+                                                        ),
+                                                        SizedBox(width: 12),
+                                                        Expanded(
+                                                          child: Text(
+                                                            'Registration successful! Please log in.',
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    duration: Duration(
+                                                      seconds: 3,
+                                                    ),
+                                                  ),
                                                 );
                                                 context.go('/login');
                                               } else {
@@ -467,12 +487,26 @@ class _RegisterScreenState extends State<RegisterScreen>
                                                 ScaffoldMessenger.of(
                                                   context,
                                                 ).showSnackBar(
-                                                  const SnackBar(
-                                                    content: Text(
-                                                      'Registration failed. Please try again.',
-                                                    ),
+                                                  SnackBar(
                                                     backgroundColor:
                                                         AppColors.error,
+                                                    content: Row(
+                                                      children: const [
+                                                        Icon(
+                                                          Icons.error,
+                                                          color: Colors.white,
+                                                        ),
+                                                        SizedBox(width: 12),
+                                                        Expanded(
+                                                          child: Text(
+                                                            'Registration failed. Please try again.',
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    duration: Duration(
+                                                      seconds: 3,
+                                                    ),
                                                   ),
                                                 );
                                               }
