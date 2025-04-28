@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../core/features/auth/forgot_password_screen.dart';
 import '../core/features/auth/login_screen.dart';
 import '../core/features/auth/register_screen.dart';
+import '../core/features/splash/splash_screen.dart';
 import '../core/features/budget/screens/budget_screen.dart';
 import '../core/features/dashboard/screens/dashboard_screen.dart';
 import '../core/features/goals/screens/goals_screen.dart';
@@ -23,8 +24,14 @@ final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(
 
 final GoRouter router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/login',
+  initialLocation: '/splash',
   routes: <RouteBase>[
+    // Splash screen
+    GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
+    
     // Auth routes
     GoRoute(
       path: '/login',
