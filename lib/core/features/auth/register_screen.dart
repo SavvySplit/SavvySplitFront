@@ -124,6 +124,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                         child: TextFormField(
                           controller: fullNameController,
                           autofocus: true,
+                          textInputAction: TextInputAction.next,
+                          cursorColor: AppColors.secondary,
+                          cursorWidth: 2.0,
+                          cursorHeight: 20.0,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: AppColors.surface.withValues(alpha: 0.4),
@@ -188,6 +192,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                         child: TextFormField(
                           controller: emailController,
                           autofocus: false, // Don't auto-focus on email field
+                          textInputAction: TextInputAction.next,
+                          cursorColor: AppColors.secondary,
+                          cursorWidth: 2.0,
+                          cursorHeight: 20.0,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: AppColors.surface.withValues(alpha: 0.4),
@@ -269,6 +277,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                       Semantics(
                         label: 'Password input field',
                         child: TextFormField(
+                          textInputAction: TextInputAction.done,
+                          cursorColor: AppColors.secondary,
+                          cursorWidth: 2.0,
+                          cursorHeight: 20.0,
                           controller: passwordController,
                           decoration: InputDecoration(
                             filled: true,
@@ -439,7 +451,6 @@ class _RegisterScreenState extends State<RegisterScreen>
                                               isLoading = true;
                                             });
                                             try {
-                                              
                                               await authProvider.registerUser(
                                                 fullNameController
                                                         .text

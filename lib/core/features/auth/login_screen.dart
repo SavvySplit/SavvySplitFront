@@ -131,6 +131,9 @@ class _LoginScreenState extends State<LoginScreen>
                         child: TextFormField(
                           controller: emailController,
                           autofocus: true,
+                          cursorColor: AppColors.secondary,
+                          cursorWidth: 2.0,
+                          cursorHeight: 20.0,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: AppColors.surface.withValues(alpha: .4),
@@ -150,6 +153,8 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(6),
+
+                              // change the color of the blinking cursor
                               borderSide: BorderSide(
                                 color: AppColors.secondary,
                                 width: 2.0,
@@ -216,6 +221,10 @@ class _LoginScreenState extends State<LoginScreen>
                       Semantics(
                         label: 'Password input field',
                         child: TextFormField(
+                          autofocus: false,
+                          cursorColor: AppColors.secondary,
+                          cursorWidth: 2.0,
+                          cursorHeight: 20.0,
                           controller: passwordController,
                           decoration: InputDecoration(
                             filled: true,

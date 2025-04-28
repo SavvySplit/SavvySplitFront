@@ -108,6 +108,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                       child: TextFormField(
                         controller: emailController,
                         autofocus: true,
+                        textInputAction: TextInputAction.next,
+                        cursorColor: AppColors.secondary,
+                        cursorWidth: 2.0,
+                        cursorHeight: 20.0,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: AppColors.surface.withValues(alpha: 0.4),
