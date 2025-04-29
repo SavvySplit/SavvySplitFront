@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../data/providers/auth_provider.dart';
 import '../../constants/colors.dart';
-import '../../widgets/loading_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -44,11 +44,21 @@ class _LoginScreenState extends State<LoginScreen>
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
-    // Mock: Load saved credentials if "Remember Password" was checked
-    if (rememberPassword) {
-      emailController.text = 'saved@example.com';
-      passwordController.text = 'savedpassword';
-    }
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('saved_email');
+    final savedPassword = prefs.getString('saved_password');
+    final remember = prefs.getBool('remember_me') ?? false;
+    setState(() {
+      rememberPassword = remember;
+      if (remember && savedEmail != null && savedPassword != null) {
+        emailController.text = savedEmail;
+        passwordController.text = savedPassword;
+      }
+    });
   }
 
   @override
@@ -69,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
+    // final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -317,16 +327,31 @@ class _LoginScreenState extends State<LoginScreen>
                               children: [
                                 Checkbox(
                                   value: rememberPassword,
-                                  onChanged: (value) {
+
+                                  onChanged: (value) async {
                                     setState(() {
                                       rememberPassword = value ?? false;
                                     });
-                                    print(
-                                      'Remember Password: $rememberPassword',
-                                    );
+                                    final prefs =
+                                        await SharedPreferences.getInstance();
+                                    if (rememberPassword) {
+                                      await prefs.setBool('remember_me', true);
+                                      await prefs.setString(
+                                        'saved_email',
+                                        emailController.text,
+                                      );
+                                      await prefs.setString(
+                                        'saved_password',
+                                        passwordController.text,
+                                      );
+                                    } else {
+                                      await prefs.setBool('remember_me', false);
+                                      await prefs.remove('saved_email');
+                                      await prefs.remove('saved_password');
+                                    }
                                   },
-                                  activeColor: AppColors.secondary,
-                                  checkColor: Colors.white,
+                                  activeColor: AppColors.accentGradientStart,
+                                  checkColor: AppColors.success,
                                 ),
                                 Text(
                                   'Remember Me',
@@ -338,153 +363,122 @@ class _LoginScreenState extends State<LoginScreen>
                               ],
                             ),
                           ),
-                          Semantics(
-                            label: 'Forgot Password link',
-                            child: TextButton(
-                              onPressed: () {
-                                context.go('/forgot-password');
-                              },
-                              child: Text(
-                                'Forgot Password?',
-                                style: TextStyle(
-                                  color: AppColors.secondary,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                          TextButton(
+                            onPressed: () {
+                              context.go('/forgot-password');
+                            },
+                            child: Text(
+                              'Forgot Password?',
+                              style: TextStyle(
+                                color: AppColors.secondary, // Blue link
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      // Show AuthProvider error message if present
-                      if (authProvider.errorMessage != null)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
-                          child: Text(
-                            authProvider.errorMessage!,
-                            style: TextStyle(
-                              color: AppColors.error,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      Semantics(
-                        label: 'Login button',
-                        child: SizedBox(
-                          width: double.infinity,
-                          child:
-                              authProvider.isLoading
-                                  ? const Center(child: LoadingIndicator())
-                                  : GestureDetector(
-                                    onTapDown: (_) {
-                                      _animationController.forward();
-                                    },
-                                    onTapUp: (_) {
-                                      _animationController.reverse();
-                                    },
-                                    onTapCancel: () {
-                                      _animationController.reverse();
-                                    },
-                                    child: ScaleTransition(
-                                      scale: _scaleAnimation,
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          padding: EdgeInsets.zero,
-                                          elevation: 4,
-                                          shadowColor: AppColors.secondary
-                                              .withValues(alpha: 0.5),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                          ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        child: GestureDetector(
+                          onTapDown: (_) {
+                            _animationController.forward();
+                          },
+                          onTapUp: (_) {
+                            _animationController.reverse();
+                          },
+                          onTapCancel: () {
+                            _animationController.reverse();
+                          },
+                          child: ScaleTransition(
+                            scale: _scaleAnimation,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                elevation: 4,
+                                shadowColor: AppColors.secondary.withOpacity(
+                                  0.5,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: () async {
+                                final authProvider = Provider.of<AuthProvider>(
+                                  context,
+                                  listen: false,
+                                );
+                                if (_formKey.currentState!.validate()) {
+                                  await authProvider.loginUser(
+                                    emailController.text.trim(),
+                                    passwordController.text.trim(),
+                                  );
+                                }
+                              },
+                              child: Ink(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      AppColors.buttonGradientStart,
+                                      AppColors.accentGradientMiddle
+                                          .withOpacity(0.85),
+                                      AppColors.buttonGradientEnd,
+                                    ],
+                                    stops: const [0.0, 0.55, 1.0],
+                                  ),
+                                  border: Border.all(
+                                    color: AppColors.buttonGradientEnd
+                                        .withOpacity(0.3),
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.buttonGradientEnd
+                                          .withValues(alpha: .4),
+                                      blurRadius: 12,
+                                      spreadRadius: 1,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                    BoxShadow(
+                                      color: AppColors.buttonGradientStart
+                                          .withValues(alpha: .3),
+                                      blurRadius: 4,
+                                      spreadRadius: 0,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ],
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                    horizontal: 0,
+                                  ),
+                                  width: double.infinity,
+                                  alignment: Alignment.center,
+                                  child: const Text(
+                                    'SIGN IN',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      letterSpacing: 1.5,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 4.0,
+                                          color: Color(0x4D000000),
+                                          offset: Offset(0, 1),
                                         ),
-                                        onPressed: () async {
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            await authProvider.loginUser(
-                                              emailController.text,
-                                              passwordController.text,
-                                            );
-                                            // Navigate if there's no error (AuthProvider sets errorMessage if failed)
-                                            if (authProvider.errorMessage ==
-                                                null) {
-                                              if (mounted) context.go('/home');
-                                            }
-                                          }
-                                        },
-                                        child: Ink(
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                              colors: [
-                                                AppColors.buttonGradientStart,
-                                                AppColors.accentGradientMiddle
-                                                    .withOpacity(0.85),
-                                                AppColors.buttonGradientEnd,
-                                              ],
-                                              stops: const [0.0, 0.55, 1.0],
-                                            ),
-                                            border: Border.all(
-                                              color: AppColors.buttonGradientEnd
-                                                  .withOpacity(0.3),
-                                              width: 1.0,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: AppColors
-                                                    .buttonGradientEnd
-                                                    .withOpacity(0.4),
-                                                blurRadius: 12,
-                                                spreadRadius: 1,
-                                                offset: const Offset(0, 4),
-                                              ),
-                                              BoxShadow(
-                                                color: AppColors
-                                                    .buttonGradientStart
-                                                    .withOpacity(0.3),
-                                                blurRadius: 4,
-                                                spreadRadius: 0,
-                                                offset: const Offset(0, 1),
-                                              ),
-                                            ],
-                                          ),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 16,
-                                              horizontal: 0,
-                                            ),
-                                            child: const Center(
-                                              child: Text(
-                                                'SIGN IN',
-                                                style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                  letterSpacing: 1.5,
-                                                  shadows: [
-                                                    Shadow(
-                                                      blurRadius: 4.0,
-                                                      color: Color(
-                                                        0x4D000000,
-                                                      ), // Colors.black with 0.3 opacity
-                                                      offset: Offset(0, 1),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                      ],
                                     ),
                                   ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -495,7 +489,7 @@ class _LoginScreenState extends State<LoginScreen>
                             onPressed: () {
                               context.go('/register');
                             },
-                            child: Text(
+                            child: const Text(
                               'Don\'t have an account? Sign Up',
                               style: TextStyle(
                                 color: AppColors.textSecondary,
