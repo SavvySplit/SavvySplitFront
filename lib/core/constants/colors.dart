@@ -27,7 +27,7 @@ class AppColors {
   // Button gradients
   static const Color accentGradientStart = Color(0xFF0C64A0); // Rich dark blue button gradient start
   static const Color accentGradientMiddle = Color(0xFF0E7BBF); // Medium blue button gradient middle
-  static const Color accentGradientEnd = Color(0xFF1E88CA); // Light blue button gradient end
+  static const Color accentGradientEnd = Color(0xFF6EC6FF); // Lighter blue button gradient end
   
   // Extra button gradient for more dramatic effect
   static const Color buttonGradientStart = Color(0xFF064273); // Very deep blue button gradient start
@@ -53,7 +53,7 @@ class AppColors {
 //   static const Color textSecondary =
 //       Colors.white70; // Lighter white for secondary text
 //   static const Color gradientStart = Color(0xFF4A90E2);
-//   static const Color gradientEnd = Color(0xFF50C878);
+//   static const Color gradientEnd = Color(0xFF8DF5A2); // Lighter green gradient end
 //   static const Color accentGradientStart = Color(0xFF4A90E2);
 //   static const Color accentGradientEnd = Color(0xFF50C878);
 // }
