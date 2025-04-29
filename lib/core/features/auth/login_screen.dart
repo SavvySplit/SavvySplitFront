@@ -414,6 +414,42 @@ class _LoginScreenState extends State<LoginScreen>
                                     emailController.text.trim(),
                                     passwordController.text.trim(),
                                   );
+
+                                  // Show feedback and redirect on success
+                                  if (authProvider.errorMessage == null &&
+                                      authProvider.userId != null) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Login successful!',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          behavior: SnackBarBehavior.floating,
+                                          margin: EdgeInsets.all(16),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(6),
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.green,
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                      // Wait for the SnackBar to show before navigating
+                                      await Future.delayed(
+                                        const Duration(milliseconds: 1200),
+                                      );
+                                      context.go('/dashboard');
+                                    }
+                                  }
                                 }
                               },
                               child: Ink(
