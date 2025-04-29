@@ -18,7 +18,8 @@ class _LoginScreenState extends State<LoginScreen>
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  bool isLoading = false;
+  // Use AuthProvider's isLoading instead of local state
+  // bool isLoading = false;
   bool rememberPassword = false;
   bool obscurePassword = true;
   double _opacity = 0.0;
@@ -356,12 +357,25 @@ class _LoginScreenState extends State<LoginScreen>
                         ],
                       ),
                       const SizedBox(height: 16),
+                      // Show AuthProvider error message if present
+                      if (authProvider.errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: Text(
+                            authProvider.errorMessage!,
+                            style: TextStyle(
+                              color: AppColors.error,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
                       Semantics(
                         label: 'Login button',
                         child: SizedBox(
                           width: double.infinity,
                           child:
-                              isLoading
+                              authProvider.isLoading
                                   ? const Center(child: LoadingIndicator())
                                   : GestureDetector(
                                     onTapDown: (_) {
@@ -390,41 +404,14 @@ class _LoginScreenState extends State<LoginScreen>
                                         onPressed: () async {
                                           if (_formKey.currentState!
                                               .validate()) {
-                                            setState(() {
-                                              isLoading = true;
-                                            });
-                                            try {
-                                              await authProvider.loginUser(
-                                                emailController.text,
-                                                passwordController.text,
-                                              );
-                                              setState(() {
-                                                isLoading = false;
-                                              });
-
-                                              // Navigate if there's no error (AuthProvider sets errorMessage if failed)
-                                              if (authProvider.errorMessage ==
-                                                  null) {
-                                                context.go('/home');
-                                              }
-                                            } catch (e) {
-                                              setState(() {
-                                                isLoading = false;
-                                              });
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    e.toString().replaceFirst(
-                                                      'Exception: ',
-                                                      '',
-                                                    ),
-                                                  ),
-                                                  backgroundColor:
-                                                      AppColors.error,
-                                                ),
-                                              );
+                                            await authProvider.loginUser(
+                                              emailController.text,
+                                              passwordController.text,
+                                            );
+                                            // Navigate if there's no error (AuthProvider sets errorMessage if failed)
+                                            if (authProvider.errorMessage ==
+                                                null) {
+                                              if (mounted) context.go('/home');
                                             }
                                           }
                                         },
