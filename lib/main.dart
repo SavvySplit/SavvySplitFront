@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         title: 'SavvySplit',
         theme: AppTheme.lightTheme(context),
         darkTheme: AppTheme.darkTheme(context),
-        themeMode: ThemeMode.dark, // Always use dark theme
+        themeMode: ThemeMode.system, // Always use dark theme
         debugShowCheckedModeBanner: false,
       ),
     );

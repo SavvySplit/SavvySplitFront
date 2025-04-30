@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:savvysplit/core/constants/colors.dart';
 
 class TransactionItem extends StatelessWidget {
   final String title;
@@ -23,6 +24,8 @@ class TransactionItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
+        color: AppColors.secondary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
         border: Border(
           bottom: BorderSide(color: Colors.white.withOpacity(0.1), width: 1),
         ),

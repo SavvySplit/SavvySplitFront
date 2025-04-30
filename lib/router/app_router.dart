@@ -9,8 +9,8 @@ import '../core/features/splash/splash_screen.dart';
 import '../core/features/budget/screens/budget_screen.dart';
 import '../core/features/dashboard/screens/dashboard_screen.dart';
 import '../core/features/goals/screens/goals_screen.dart';
+import '../core/features/groups/screens/groups_screen.dart';
 import '../core/features/settings/screens/settings_screen.dart';
-import '../core/features/statistics/screens/statistics_screen.dart';
 import '../core/features/wallet/screens/wallet_screen.dart';
 import '../core/providers/tab_provider.dart';
 import '../core/widgets/main_scaffold.dart';
@@ -74,12 +74,12 @@ final GoRouter router = GoRouter(
           ],
         ),
 
-        // Statistics tab
+        // Groups tab
         GoRoute(
-          path: '/statistics',
-          builder: (context, state) => const StatisticsScreen(),
+          path: '/groups',
+          builder: (context, state) => const GroupsScreen(),
           routes: [
-            // Add sub-routes for statistics if needed
+            // Add sub-routes for groups if needed
           ],
         ),
 
