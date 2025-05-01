@@ -583,7 +583,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                                 border: Border.all(
                                                   color: AppColors
                                                       .buttonGradientEnd
-                                                      .withOpacity(0.3),
+                                                      .withValues(alpha: .3),
                                                   width: 1.0,
                                                 ),
                                                 borderRadius:
@@ -592,7 +592,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                                   BoxShadow(
                                                     color: AppColors
                                                         .buttonGradientEnd
-                                                        .withOpacity(0.4),
+                                                        .withValues(alpha: .4),
                                                     blurRadius: 12,
                                                     spreadRadius: 1,
                                                     offset: const Offset(0, 4),
@@ -600,7 +600,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                                   BoxShadow(
                                                     color: AppColors
                                                         .buttonGradientStart
-                                                        .withOpacity(0.3),
+                                                        .withValues(alpha: .3),
                                                     blurRadius: 4,
                                                     spreadRadius: 0,
                                                     offset: const Offset(0, 1),

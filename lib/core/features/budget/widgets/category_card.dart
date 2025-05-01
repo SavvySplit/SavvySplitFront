@@ -13,18 +13,18 @@ class CategoryCard extends StatelessWidget {
     required this.spent,
     required this.budget,
     required this.percentage,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     final formatter = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
     final remaining = budget - spent;
-    
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground.withOpacity(0.2),
+        color: AppColors.cardBackground.withValues(alpha: .2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -44,7 +44,8 @@ class CategoryCard extends StatelessWidget {
               Text(
                 '${(percentage * 100).toStringAsFixed(0)}%',
                 style: TextStyle(
-                  color: percentage > 0.9 ? Colors.redAccent : Colors.tealAccent,
+                  color:
+                      percentage > 0.9 ? Colors.redAccent : Colors.tealAccent,
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
@@ -57,7 +58,7 @@ class CategoryCard extends StatelessWidget {
               Container(
                 height: 6,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: .1),
                   borderRadius: BorderRadius.circular(3),
                 ),
               ),
@@ -67,9 +68,10 @@ class CategoryCard extends StatelessWidget {
                   height: 6,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: percentage > 0.9 
-                          ? [Colors.redAccent, Colors.red.shade300]
-                          : [Colors.tealAccent, Colors.teal.shade300],
+                      colors:
+                          percentage > 0.9
+                              ? [Colors.redAccent, Colors.red.shade300]
+                              : [Colors.tealAccent, Colors.teal.shade300],
                     ),
                     borderRadius: BorderRadius.circular(3),
                   ),
