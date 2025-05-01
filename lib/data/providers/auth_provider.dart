@@ -13,9 +13,23 @@ class AuthProvider extends ChangeNotifier {
   String? _userId;
   String? get userId => _userId;
   
-  // You can expand this with more user properties as needed
-  // User? _currentUser;
-  // User? get currentUser => _currentUser;
+  String? _userName;
+  String? get userName => _userName;
+  
+  String? _userEmail;
+  String? get userEmail => _userEmail;
+  
+  // Get first name of user (for display purposes)
+  String get firstName {
+    if (_userName == null || _userName!.isEmpty) return 'User';
+    return _userName!.split(' ').first;
+  }
+  
+  // Get first letter of first name (for avatar)
+  String get firstInitial {
+    if (_userName == null || _userName!.isEmpty) return 'U';
+    return _userName!.split(' ').first[0].toUpperCase();
+  }
 
   void setLoading(bool loading) {
     _isLoading = loading;
@@ -89,12 +103,27 @@ class AuthProvider extends ChangeNotifier {
         // Login successful
         print('User logged in successfully: $email');
         
-        // Store user ID from response if available
-        if (response.data['user'] != null && response.data['user']['id'] != null) {
-          _userId = response.data['user']['id'].toString();
-        } else {
-          // Fallback ID if not provided by API
-          _userId = 'user_${DateTime.now().millisecondsSinceEpoch}';
+        // Store user ID and name from response if available
+        if (response.data['user'] != null) {
+          if (response.data['user']['id'] != null) {
+            _userId = response.data['user']['id'].toString();
+          } else {
+            // Fallback ID if not provided by API
+            _userId = 'user_${DateTime.now().millisecondsSinceEpoch}';
+          }
+          
+          // Store user name
+          if (response.data['user']['name'] != null) {
+            _userName = response.data['user']['name'];
+          }
+          
+          // Store user email
+          if (response.data['user']['email'] != null) {
+            _userEmail = response.data['user']['email'];
+          } else {
+            // Use the email provided during login as fallback
+            _userEmail = email;
+          }
         }
         
         // Store token if provided
@@ -150,6 +179,8 @@ class AuthProvider extends ChangeNotifier {
   // Logout method
   void logout() {
     _userId = null;
+    _userName = null;
+    _userEmail = null;
     // Add any other cleanup needed
     notifyListeners();
   }

@@ -6,10 +6,12 @@ import '../core/features/auth/forgot_password_screen.dart';
 import '../core/features/auth/login_screen.dart';
 import '../core/features/auth/register_screen.dart';
 import '../core/features/splash/splash_screen.dart';
+import '../core/features/analytics/screens/analytics_screen.dart';
 import '../core/features/budget/screens/budget_screen.dart';
 import '../core/features/dashboard/screens/dashboard_screen.dart';
 import '../core/features/goals/screens/goals_screen.dart';
 import '../core/features/groups/screens/groups_screen.dart';
+import '../core/features/profile/screens/profile_screen.dart';
 import '../core/features/settings/screens/settings_screen.dart';
 import '../core/features/wallet/screens/wallet_screen.dart';
 import '../core/providers/tab_provider.dart';
@@ -83,6 +85,15 @@ final GoRouter router = GoRouter(
           ],
         ),
 
+        // Analytics tab
+        GoRoute(
+          path: '/analytics',
+          builder: (context, state) => const AnalyticsScreen(),
+          routes: [
+            // Add sub-routes for analytics if needed
+          ],
+        ),
+
         // Settings tab
         GoRoute(
           path: '/settings',
@@ -104,6 +115,11 @@ final GoRouter router = GoRouter(
       path: '/goals',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const GoalsScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const ProfileScreen(),
     ),
   ],
 );
