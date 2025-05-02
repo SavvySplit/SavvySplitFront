@@ -4,21 +4,12 @@ import 'common/theme/app_theme.dart';
 import 'core/providers/budget_provider.dart';
 import 'core/providers/goal_provider.dart';
 import 'core/providers/tab_provider.dart';
-import 'core/providers/theme_provider.dart';
 import 'core/providers/transaction_provider.dart';
 import 'data/providers/auth_provider.dart';
 import 'router/app_router.dart';
 
-import 'package:flutter/services.dart';
-
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]).then((_) {
-    runApp(const MyApp());
-  });
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -33,18 +24,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TransactionProvider()),
         ChangeNotifierProvider(create: (_) => BudgetProvider()),
         ChangeNotifierProvider(create: (_) => GoalProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
-      child: Consumer<ThemeProvider>(
-        builder:
-            (context, themeProvider, _) => MaterialApp.router(
-              routerConfig: router,
-              title: 'SavvySplit',
-              theme: AppTheme.lightTheme(context),
-              darkTheme: AppTheme.darkTheme(context),
-              themeMode: themeProvider.themeMode,
-              debugShowCheckedModeBanner: false,
-            ),
+      child: MaterialApp.router(
+        routerConfig: router,
+        title: 'SavvySplit',
+        theme: AppTheme.lightTheme(context),
+        darkTheme: AppTheme.darkTheme(context),
+        themeMode: ThemeMode.system, // Always use dark theme
+        debugShowCheckedModeBanner: false,
       ),
     );
   }

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../constants/colors.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:provider/provider.dart';
 import 'package:savvysplit/core/features/dashboard/widgets/ai_insight_card.dart';
-import '../../../../data/providers/auth_provider.dart';
+import '../widgets/transaction_item.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -122,14 +121,12 @@ class _DashboardScreenState extends State<DashboardScreen>
                     ),
               ),
               const SizedBox(height: 4),
-              Consumer<AuthProvider>(
-                builder: (context, authProvider, _) => Text(
-                  'Welcome back, ${authProvider.firstName}!',
-                  style: TextStyle(
-                    color: AppColors.textPrimary.withOpacity(0.7),
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
+              Text(
+                'Welcome back, Ahmed!',
+                style: TextStyle(
+                  color: AppColors.textPrimary.withOpacity(0.7),
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
                 ),
               ),
             ],
@@ -203,18 +200,16 @@ class _DashboardScreenState extends State<DashboardScreen>
                       width: 1.5,
                     ),
                   ),
-                  child: Center(
-                    child: Consumer<AuthProvider>(
-                      builder: (context, authProvider, _) => CircleAvatar(
-                        radius: 16,
-                        backgroundColor: AppColors.accentGradientEnd,
-                        child: Text(
-                          authProvider.firstInitial,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
+                  child: const Center(
+                    child: CircleAvatar(
+                      radius: 16,
+                      backgroundColor: AppColors.accentGradientEnd,
+                      child: Text(
+                        'A',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
                       ),
                     ),

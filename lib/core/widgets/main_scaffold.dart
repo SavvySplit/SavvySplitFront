@@ -21,13 +21,13 @@ class MainScaffold extends StatelessWidget {
           child,
           // Position the FAB at the bottom center
           Positioned(
-            bottom: 65.0,
+            bottom: 40, // Increased to ensure it's above the navigation bar
             left: 0,
             right: 0,
             child: Center(
               child: Container(
-                height: 48,
-                width: 48,
+                height: 48, // Smaller size
+                width: 48, // Smaller size
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: const LinearGradient(
@@ -50,93 +50,75 @@ class MainScaffold extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () {
-                      // Show bottom sheet with options to add expense, income, or split bill
-                      showModalBottomSheet(
-                        context: context,
-                        backgroundColor: Colors.transparent,
-                        builder:
-                            (context) => Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: AppColors.gradientStart,
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
-                                ),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ListTile(
-                                    leading: const Icon(
-                                      Icons.add,
-                                      color: Colors.white,
-                                    ),
-                                    title: const Text(
-                                      'Add Expense',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Navigate to Add Expense',
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  ListTile(
-                                    leading: const Icon(
-                                      Icons.attach_money,
-                                      color: Colors.white,
-                                    ),
-                                    title: const Text(
-                                      'Add Income',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Navigate to Add Income',
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  ListTile(
-                                    leading: const Icon(
-                                      Icons.group,
-                                      color: Colors.white,
-                                    ),
-                                    title: const Text(
-                                      'Split Bill',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Navigate to Split Bill',
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
+          // Show bottom sheet with options to add expense, income, or split bill
+          showModalBottomSheet(
+            context: context,
+            backgroundColor: Colors.transparent,
+            builder:
+                (context) => Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.gradientStart,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.add, color: Colors.white),
+                        title: const Text(
+                          'Add Expense',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Navigate to Add Expense'),
                             ),
-                      );
+                          );
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(
+                          Icons.attach_money,
+                          color: Colors.white,
+                        ),
+                        title: const Text(
+                          'Add Income',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Navigate to Add Income'),
+                            ),
+                          );
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.group, color: Colors.white),
+                        title: const Text(
+                          'Split Bill',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Navigate to Split Bill'),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+          );
                     },
                     customBorder: const CircleBorder(),
                     child: const Center(
@@ -157,8 +139,7 @@ class MainScaffold extends StatelessWidget {
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.transparent,
         color: AppColors.gradientStart,
-        buttonBackgroundColor:
-            AppColors.gradientStart, // Remove the middle button highlight
+        buttonBackgroundColor: AppColors.gradientStart, // Remove the middle button highlight
         height: 60,
         index: tabProvider.currentIndex,
         onTap: (index) {
@@ -174,9 +155,6 @@ class MainScaffold extends StatelessWidget {
               context.go('/groups');
               break;
             case 3:
-              context.go('/analytics');
-              break;
-            case 4:
               context.go('/settings');
               break;
           }
@@ -185,7 +163,6 @@ class MainScaffold extends StatelessWidget {
           Icon(Icons.home, color: Colors.white),
           Icon(Icons.receipt_long, color: Colors.white),
           Icon(Icons.group, color: Colors.white),
-          Icon(Icons.insights, color: Colors.white),
           Icon(Icons.person, color: Colors.white),
         ],
       ),
