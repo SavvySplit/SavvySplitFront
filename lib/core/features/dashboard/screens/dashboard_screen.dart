@@ -123,15 +123,14 @@ class _DashboardScreenState extends State<DashboardScreen>
               ),
               const SizedBox(height: 4),
               Consumer<AuthProvider>(
-                builder:
-                    (context, authProvider, _) => Text(
-                      'Welcome back, ${authProvider.firstName}!',
-                      style: TextStyle(
-                        color: AppColors.textPrimary.withValues(alpha: .7),
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                      ),
-                    ),
+                builder: (context, authProvider, _) => Text(
+                  'Welcome back, ${authProvider.firstName}!',
+                  style: TextStyle(
+                    color: AppColors.textPrimary.withOpacity(0.7),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
+                ),
               ),
             ],
           ),
@@ -147,9 +146,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                       color: Colors.white,
                     ),
                     style: IconButton.styleFrom(
-                      backgroundColor: AppColors.secondary.withValues(
-                        alpha: 0.22,
-                      ),
+                      backgroundColor: AppColors.secondary.withOpacity(0.22),
                       shape: const CircleBorder(),
                     ),
                   ),
@@ -170,9 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.redAccent.withValues(
-                                    alpha: .18,
-                                  ),
+                                  color: Colors.redAccent.withOpacity(0.18),
                                   blurRadius: 6,
                                   offset: const Offset(0, 2),
                                 ),
@@ -202,27 +197,26 @@ class _DashboardScreenState extends State<DashboardScreen>
                   height: 42,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.secondary.withValues(alpha: .22),
+                    color: AppColors.secondary.withOpacity(0.22),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: .1),
+                      color: Colors.white.withOpacity(0.1),
                       width: 1.5,
                     ),
                   ),
                   child: Center(
                     child: Consumer<AuthProvider>(
-                      builder:
-                          (context, authProvider, _) => CircleAvatar(
-                            radius: 16,
-                            backgroundColor: AppColors.accentGradientEnd,
-                            child: Text(
-                              authProvider.firstInitial,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
+                      builder: (context, authProvider, _) => CircleAvatar(
+                        radius: 16,
+                        backgroundColor: AppColors.accentGradientEnd,
+                        child: Text(
+                          authProvider.firstInitial,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -286,7 +280,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: .07),
+                    color: Colors.black.withOpacity(0.07),
                     blurRadius: 7,
                     offset: const Offset(0, 2),
                   ),
@@ -297,9 +291,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: (transaction['color'] as Color).withValues(
-                        alpha: .18,
-                      ),
+                      color: (transaction['color'] as Color).withOpacity(0.18),
                       shape: BoxShape.circle,
                     ),
                     padding: const EdgeInsets.all(10),
@@ -336,7 +328,9 @@ class _DashboardScreenState extends State<DashboardScreen>
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    '${isIncome ? '+' : '-'}${(transaction['amount'] as double).toStringAsFixed(2)} USD',
+                    (isIncome ? '+' : '-') +
+                        (transaction['amount'] as double).toStringAsFixed(2) +
+                        ' USD',
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 15.5,
@@ -423,7 +417,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               borderRadius: BorderRadius.circular(8),
               // Shadow removed as requested
               border: Border.all(
-                color: AppColors.gradientEnd.withValues(alpha: .13),
+                color: AppColors.gradientEnd.withOpacity(0.13),
                 width: 1.2,
               ),
             ),
@@ -437,10 +431,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                     shape: BoxShape.circle,
                     color:
                         item['label'] == 'Income'
-                            ? Colors.white.withValues(
-                              alpha: 0.55,
+                            ? Colors.white.withOpacity(
+                              0.55,
                             ) // higher contrast for green card
-                            : Colors.white.withValues(alpha: 0.32),
+                            : Colors.white.withOpacity(0.32),
                     // Icon shadow removed as requested
                   ),
                   padding: const EdgeInsets.all(7), // reduced padding
@@ -690,7 +684,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: .07),
+                            color: Colors.black.withOpacity(0.07),
                             blurRadius: 7,
                             offset: const Offset(0, 2),
                           ),
@@ -704,9 +698,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                         children: [
                           Container(
                             decoration: BoxDecoration(
-                              color: (item['color'] as Color).withValues(
-                                alpha: .18,
-                              ),
+                              color: (item['color'] as Color).withOpacity(0.18),
                               shape: BoxShape.circle,
                             ),
                             padding: const EdgeInsets.all(10),
@@ -960,12 +952,12 @@ class _DashboardScreenState extends State<DashboardScreen>
                   ),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: .18),
+                    color: Colors.white.withOpacity(0.18),
                     width: 1.2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: colorStart.withValues(alpha: .25),
+                      color: colorStart.withOpacity(0.25),
                       blurRadius: 12,
                       offset: const Offset(0, 5),
                     ),
@@ -976,8 +968,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: onTap,
-                    splashColor: Colors.white.withValues(alpha: .10),
-                    highlightColor: Colors.white.withValues(alpha: .05),
+                    splashColor: Colors.white.withOpacity(0.10),
+                    highlightColor: Colors.white.withOpacity(0.05),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         vertical: 20,

@@ -68,15 +68,18 @@ class _BudgetScreenState extends State<BudgetScreen> {
           Text(
             'Budget Overview',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.add_circle_outline, color: Colors.white),
+            icon: const Icon(
+              Icons.add_circle_outline,
+              color: Colors.white,
+            ),
             style: IconButton.styleFrom(
-              backgroundColor: AppColors.secondary.withValues(alpha: .2),
+              backgroundColor: AppColors.secondary.withOpacity(0.2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -92,7 +95,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
       margin: const EdgeInsets.symmetric(vertical: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground.withValues(alpha: .1),
+        color: AppColors.cardBackground.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -101,9 +104,9 @@ class _BudgetScreenState extends State<BudgetScreen> {
           Text(
             'Monthly Overview',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 20),
           const MonthlyChart(),
@@ -115,12 +118,12 @@ class _BudgetScreenState extends State<BudgetScreen> {
   Widget _buildBudgetOverview(BuildContext context) {
     final budgetProvider = Provider.of<BudgetProvider>(context);
     final percentage = budgetProvider.percentage;
-
+    
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground.withValues(alpha: .1),
+        color: AppColors.cardBackground.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -129,15 +132,15 @@ class _BudgetScreenState extends State<BudgetScreen> {
           Text(
             'Budget Overview',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.cardBackground.withValues(alpha: .2),
+              color: AppColors.cardBackground.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -146,7 +149,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                 Text(
                   'Monthly Budget',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: .7),
+                    color: Colors.white.withOpacity(0.7),
                     fontSize: 14,
                   ),
                 ),
@@ -180,7 +183,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                     Container(
                       height: 8,
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
+                        color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -216,7 +219,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                             Text(
                               'Spent',
                               style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.7),
+                                color: Colors.white.withOpacity(0.7),
                                 fontSize: 14,
                               ),
                             ),
@@ -247,7 +250,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                             Text(
                               'Remaining',
                               style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.7),
+                                color: Colors.white.withOpacity(0.7),
                                 fontSize: 14,
                               ),
                             ),
@@ -276,7 +279,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
   Widget _buildCategoryBreakdown(BuildContext context) {
     final budgetProvider = Provider.of<BudgetProvider>(context);
-
+    
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
@@ -288,16 +291,23 @@ class _BudgetScreenState extends State<BudgetScreen> {
               Text(
                 'Categories',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               TextButton.icon(
                 onPressed: () {},
-                icon: const Icon(Icons.add, color: Colors.tealAccent, size: 18),
+                icon: const Icon(
+                  Icons.add,
+                  color: Colors.tealAccent,
+                  size: 18,
+                ),
                 label: const Text(
                   'Add Category',
-                  style: TextStyle(color: Colors.tealAccent, fontSize: 14),
+                  style: TextStyle(
+                    color: Colors.tealAccent,
+                    fontSize: 14,
+                  ),
                 ),
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
