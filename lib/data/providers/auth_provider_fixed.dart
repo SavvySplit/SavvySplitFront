@@ -43,9 +43,6 @@ class AuthProvider extends ChangeNotifier {
         // Registration successful
         print('User registered successfully: $email');
         setLoading(false);
-      } else if (response.statusCode == 302) {
-        // 302 typically means redirect, which in registration context often means the user already exists
-        setErrorMessage('User with this email already exists. Please use a different email or login.');
       } else {
         // Handle error from API
         String errorMsg = 'Registration failed. Please try again.';

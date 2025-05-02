@@ -842,6 +842,18 @@ class _DashboardScreenState extends State<DashboardScreen>
                     );
                   },
                 ),
+                _buildActionButton(
+                  context,
+                  Icons.pie_chart,
+                  'Budget',
+                  const Color(0xFF8A2BE2), // Purple color start
+                  const Color(0xFF4B0082), // Purple color end (indigo)
+                  () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Navigate to Budget')),
+                    );
+                  },
+                ),
               ],
             ),
           ),

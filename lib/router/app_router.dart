@@ -6,6 +6,7 @@ import '../core/features/auth/forgot_password_screen.dart';
 import '../core/features/auth/login_screen.dart';
 import '../core/features/auth/register_screen.dart';
 import '../core/features/splash/splash_screen.dart';
+import '../core/features/analytics/screens/analytics_screen.dart';
 import '../core/features/budget/screens/budget_screen.dart';
 import '../core/features/dashboard/screens/dashboard_screen.dart';
 import '../core/features/goals/screens/goals_screen.dart';
@@ -80,6 +81,15 @@ final GoRouter router = GoRouter(
           builder: (context, state) => const GroupsScreen(),
           routes: [
             // Add sub-routes for groups if needed
+          ],
+        ),
+
+        // Analytics tab
+        GoRoute(
+          path: '/analytics',
+          builder: (context, state) => const AnalyticsScreen(),
+          routes: [
+            // Add sub-routes for analytics if needed
           ],
         ),
 
