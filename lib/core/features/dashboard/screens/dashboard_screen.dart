@@ -313,12 +313,16 @@ class _DashboardScreenState extends State<DashboardScreen>
       );
     }
 
+    // Set a fixed height for the cards
+    const double cardHeight = 160.0; // Adjust to fit your content
+    
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Income/Expense Summary
         Expanded(
           child: Container(
+            height: cardHeight,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
@@ -472,6 +476,7 @@ class _DashboardScreenState extends State<DashboardScreen>
         // Savings Goal Summary
         Expanded(
           child: Container(
+            height: cardHeight,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
             decoration: BoxDecoration(
               color: AppColors.cardBackground,
