@@ -79,12 +79,8 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    // final authProvider = Provider.of<AuthProvider>(context);
-
     return GestureDetector(
-      // Add this GestureDetector to dismiss keyboard when tapping outside
       onTap: () {
-        // Hide keyboard when tapping outside of text fields
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
@@ -149,7 +145,9 @@ class _LoginScreenState extends State<LoginScreen>
                             cursorHeight: 20.0,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: AppColors.surface.withValues(alpha: .4),
+                              fillColor: AppColors.surface.withValues(
+                                alpha: .4,
+                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(6),
                                 borderSide: BorderSide(
@@ -188,7 +186,9 @@ class _LoginScreenState extends State<LoginScreen>
                                 children: [
                                   if (_isEmailValid)
                                     Padding(
-                                      padding: const EdgeInsets.only(right: 8.0),
+                                      padding: const EdgeInsets.only(
+                                        right: 8.0,
+                                      ),
                                       child: Icon(
                                         Icons.check_circle,
                                         color: Colors.green,
@@ -241,7 +241,9 @@ class _LoginScreenState extends State<LoginScreen>
                             controller: passwordController,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: AppColors.surface.withValues(alpha: 0.4),
+                              fillColor: AppColors.surface.withValues(
+                                alpha: 0.4,
+                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(6),
                                 borderSide: BorderSide(
@@ -337,7 +339,10 @@ class _LoginScreenState extends State<LoginScreen>
                                       final prefs =
                                           await SharedPreferences.getInstance();
                                       if (rememberPassword) {
-                                        await prefs.setBool('remember_me', true);
+                                        await prefs.setBool(
+                                          'remember_me',
+                                          true,
+                                        );
                                         await prefs.setString(
                                           'saved_email',
                                           emailController.text,
@@ -347,7 +352,10 @@ class _LoginScreenState extends State<LoginScreen>
                                           passwordController.text,
                                         );
                                       } else {
-                                        await prefs.setBool('remember_me', false);
+                                        await prefs.setBool(
+                                          'remember_me',
+                                          false,
+                                        );
                                         await prefs.remove('saved_email');
                                         await prefs.remove('saved_password');
                                       }
@@ -407,21 +415,24 @@ class _LoginScreenState extends State<LoginScreen>
                                   ),
                                 ),
                                 onPressed: () async {
-                                  final authProvider = Provider.of<AuthProvider>(
-                                    context,
-                                    listen: false,
-                                  );
+                                  final authProvider =
+                                      Provider.of<AuthProvider>(
+                                        context,
+                                        listen: false,
+                                      );
                                   if (_formKey.currentState!.validate()) {
                                     await authProvider.loginUser(
                                       emailController.text.trim(),
                                       passwordController.text.trim(),
                                     );
-                                    
+
                                     if (context.mounted) {
                                       // Show error message if login failed
                                       if (authProvider.errorMessage != null) {
                                         // Always show a user-friendly error message for wrong credentials
-                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
                                           SnackBar(
                                             content: Row(
                                               children: [
@@ -431,7 +442,9 @@ class _LoginScreenState extends State<LoginScreen>
                                                 ),
                                                 const SizedBox(width: 12),
                                                 Expanded(
-                                                  child: Text('Wrong email or password. Please try again.'),
+                                                  child: Text(
+                                                    'Wrong email or password. Please try again.',
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -443,7 +456,9 @@ class _LoginScreenState extends State<LoginScreen>
                                               ),
                                             ),
                                             backgroundColor: AppColors.error,
-                                            duration: const Duration(seconds: 3),
+                                            duration: const Duration(
+                                              seconds: 3,
+                                            ),
                                           ),
                                         );
                                       } else if (authProvider.userId != null) {
@@ -473,7 +488,7 @@ class _LoginScreenState extends State<LoginScreen>
                                         );
                                         // Wait for the SnackBar to show before navigating
                                         await Future.delayed(
-                                          const Duration(milliseconds: 1200),
+                                          const Duration(milliseconds: 1500),
                                         );
                                         context.go('/dashboard');
                                       }

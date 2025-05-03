@@ -20,7 +20,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   final passwordController = TextEditingController();
   String selectedRole = 'User';
   bool isLoading = false;
-  bool obscurePassword = true; // For password visibility toggle
+  bool obscurePassword = true;
   double _opacity = 0.0; // For fade-in animation
   bool _isEmailValid = false; // For real-time email validation feedback
   late AnimationController _animationController; // For scale animation
@@ -67,9 +67,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     final authProvider = Provider.of<AuthProvider>(context);
 
     return GestureDetector(
-      // Add this GestureDetector to dismiss keyboard when tapping outside
       onTap: () {
-        // Hide keyboard when tapping outside of text fields
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
@@ -387,11 +385,15 @@ class _RegisterScreenState extends State<RegisterScreen>
                             // Add a container with constraints to prevent overflow
                             width: double.infinity,
                             child: ButtonTheme(
-                              alignedDropdown: true, // Align dropdown with the button
+                              alignedDropdown:
+                                  true, // Align dropdown with the button
                               child: DropdownButtonFormField<String>(
                                 value: selectedRole,
                                 isExpanded: true, // Prevent horizontal overflow
-                                icon: const Icon(Icons.arrow_drop_down, size: 24),
+                                icon: const Icon(
+                                  Icons.arrow_drop_down,
+                                  size: 24,
+                                ),
                                 menuMaxHeight: 200, // Limit menu height
                                 // Ensure dropdown menu stays within the parent width
                                 dropdownColor: AppColors.gradientEnd,
@@ -433,16 +435,26 @@ class _RegisterScreenState extends State<RegisterScreen>
                                     color: AppColors.secondary,
                                     size: 20,
                                   ),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
                                 ),
                                 style: TextStyle(color: AppColors.textPrimary),
-                                items: ['User', 'Admin'].map((role) => DropdownMenuItem<String>(
-                                  value: role,
-                                  child: Text(
-                                    role,
-                                    overflow: TextOverflow.ellipsis, // Handle text overflow
-                                  ),
-                                )).toList(),
+                                items:
+                                    ['User', 'Admin']
+                                        .map(
+                                          (role) => DropdownMenuItem<String>(
+                                            value: role,
+                                            child: Text(
+                                              role,
+                                              overflow:
+                                                  TextOverflow
+                                                      .ellipsis, // Handle text overflow
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
                                 onChanged: (value) {
                                   setState(() {
                                     selectedRole = value!;

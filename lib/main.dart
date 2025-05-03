@@ -7,11 +7,11 @@ import 'core/providers/goal_provider.dart';
 import 'core/providers/tab_provider.dart';
 import 'core/providers/transaction_provider.dart';
 import 'data/providers/auth_provider.dart';
+import 'data/providers/dashboard_provider.dart';
 import 'router/app_router.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  // Lock the app to portrait mode
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -32,13 +32,16 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TransactionProvider()),
         ChangeNotifierProvider(create: (_) => BudgetProvider()),
         ChangeNotifierProvider(create: (_) => GoalProvider()),
+        ChangeNotifierProvider(
+          create: (_) => DashboardProvider()..initialize(),
+        ),
       ],
       child: MaterialApp.router(
         routerConfig: router,
         title: 'SavvySplit',
         theme: AppTheme.lightTheme(context),
         darkTheme: AppTheme.darkTheme(context),
-        themeMode: ThemeMode.system, // Always use dark theme
+        themeMode: ThemeMode.dark, // Always use dark theme
         debugShowCheckedModeBanner: false,
       ),
     );
