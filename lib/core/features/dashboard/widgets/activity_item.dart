@@ -69,28 +69,20 @@ class ActivityItem extends StatelessWidget {
   }
 
   Widget _buildActivityCard(BuildContext context, bool isIncome) {
-    return Material(
-      elevation: 3.0,
+    return InkWell(
       borderRadius: BorderRadius.circular(14),
-      color: AppColors.cardBackground,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: () => onTap(activity),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(14),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.07),
-                blurRadius: 7,
-                offset: const Offset(0, 2),
-              ),
-            ],
+      onTap: () => onTap(activity),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.cardBackground,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: Colors.grey.withOpacity(0.15),
+            width: 1.0,
           ),
-          padding: const EdgeInsets.all(16),
-          child: _buildActivityContent(isIncome),
         ),
+        padding: const EdgeInsets.all(16),
+        child: _buildActivityContent(isIncome),
       ),
     );
   }

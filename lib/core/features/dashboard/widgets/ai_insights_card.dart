@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../constants/colors.dart';
-import 'enhanced_ai_insight_card.dart';
+import 'interactive_ai_insight_card.dart';
 
 class AIInsightsCard extends StatelessWidget {
   final List<Map<String, dynamic>> insights;
@@ -36,7 +36,7 @@ class AIInsightsCard extends StatelessWidget {
                 ...insights.map((insight) {
                   return Column(
                     children: [
-                      EnhancedAIInsightCard(
+                      InteractiveAIInsightCard(
                         title: insight['title'] as String,
                         description: insight['description'] as String,
                         icon: insight['icon'] as IconData,
@@ -44,8 +44,14 @@ class AIInsightsCard extends StatelessWidget {
                         onDismiss: insight['onDismiss'] as VoidCallback,
                         onAction: insight['onAction'] as VoidCallback,
                         actionLabel: insight['actionLabel'] as String,
+                        // New properties for enhanced functionality
+                        detailedData: insight['detailedData'] as Map<String, dynamic>?,
+                        chartType: insight['chartType'] as String?,
+                        chartData: (insight['chartData'] as List<dynamic>?)
+                            ?.map((item) => item as Map<String, dynamic>).toList(),
+                        learnMoreText: insight['learnMoreText'] as String?,
                       ),
-                      if (insight != insights.last) const SizedBox(height: 12),
+                      if (insight != insights.last) const SizedBox(height: 16),
                     ],
                   );
                 }).toList(),

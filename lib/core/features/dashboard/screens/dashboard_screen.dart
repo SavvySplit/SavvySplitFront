@@ -201,7 +201,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               ),
               const SizedBox(height: 4),
               Text(
-                'Welcome back, Ahmed!',
+                _getTimeBasedGreeting(),
                 style: TextStyle(
                   color: AppColors.textPrimary.withOpacity(0.7),
                   fontWeight: FontWeight.w500,
@@ -276,16 +276,12 @@ class _DashboardScreenState extends State<DashboardScreen>
                 ),
               ),
               const SizedBox(width: 8),
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: AppColors.secondary.withOpacity(0.22),
-                  shape: BoxShape.circle,
-                  image: const DecorationImage(
-                    image: AssetImage('assets/images/avatar.png'),
-                    fit: BoxFit.cover,
-                  ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.person, color: Colors.white),
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.secondary.withOpacity(0.22),
+                  shape: const CircleBorder(),
                 ),
               ),
             ],
@@ -313,8 +309,8 @@ class _DashboardScreenState extends State<DashboardScreen>
       );
     }
 
-    // Set a fixed height for the cards
-    const double cardHeight = 160.0; // Adjust to fit your content
+    // Make the card height more flexible
+    const double cardHeight = 180.0; // Further increased to handle content better
     
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -645,31 +641,18 @@ class _DashboardScreenState extends State<DashboardScreen>
         Padding(
           padding: const EdgeInsets.only(bottom: 12.0, top: 4),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _accentBar,
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Recent Activities',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 18,
-                      letterSpacing: 0.1,
-                    ),
-                  ),
-                ],
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.filter_list,
+              _accentBar,
+              const SizedBox(width: 8),
+              const Text(
+                'Recent Activities',
+                style: TextStyle(
                   color: AppColors.textPrimary,
-                  size: 20,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 18,
+                  letterSpacing: 0.1,
                 ),
-                onPressed: _showFilterOptions,
               ),
             ],
           ),
@@ -708,10 +691,21 @@ class _DashboardScreenState extends State<DashboardScreen>
   }
 
   // Event handlers for Recent Activities
-  void _showFilterOptions() {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Filter options coming soon')));
+
+  // Generate personalized greeting based on time of day
+  String _getTimeBasedGreeting() {
+    final hour = DateTime.now().hour;
+    String timeGreeting;
+    
+    if (hour < 12) {
+      timeGreeting = 'Good morning';
+    } else if (hour < 17) {
+      timeGreeting = 'Good afternoon';
+    } else {
+      timeGreeting = 'Good evening';
+    }
+    
+    return '$timeGreeting, Ahmed!';
   }
 
   void _showActivityDetails(Map<String, dynamic> activity) {
@@ -804,22 +798,61 @@ class _DashboardScreenState extends State<DashboardScreen>
   Widget _buildEnhancedAIInsights(BuildContext context) {
     final dashboardProvider = Provider.of<DashboardProvider>(context);
     final insights = dashboardProvider.insights;
+    
+    // Create sample chart data for enhanced insights
+    final List<Map<String, dynamic>> spendingTrendData = [
+      {'label': 'Jan', 'value': 1200},
+      {'label': 'Feb', 'value': 1350},
+      {'label': 'Mar', 'value': 1100},
+      {'label': 'Apr', 'value': 1450},
+      {'label': 'May', 'value': 1200},
+      {'label': 'Jun', 'value': 950},
+    ];
 
-    final insightsMapped =
-        insights
-            .map(
-              (insight) => {
-                'title': insight.title,
-                'description': insight.description,
-                'icon': insight.icon,
-                'color': insight.color,
-                'onDismiss': () => dashboardProvider.dismissInsight(insight),
-                'onAction':
-                    () => dashboardProvider.handleInsightAction(insight),
-                'actionLabel': insight.actionLabel,
-              },
-            )
-            .toList();
+    final List<Map<String, dynamic>> categoryBreakdownData = [
+      {'label': 'Food', 'value': 450, 'percentage': 30, 'color': 0xFF4CAF50},
+      {'label': 'Transport', 'value': 300, 'percentage': 20, 'color': 0xFF2196F3},
+      {'label': 'Shopping', 'value': 225, 'percentage': 15, 'color': 0xFFFFC107},
+      {'label': 'Bills', 'value': 375, 'percentage': 25, 'color': 0xFFFF5722},
+      {'label': 'Other', 'value': 150, 'percentage': 10, 'color': 0xFF9E9E9E},
+    ];
+    
+    final List<Map<String, dynamic>> savingsOpportunities = [
+      {'label': 'Coffee subscriptions', 'value': '22.99/mo'},
+      {'label': 'Unused streaming services', 'value': '29.99/mo'},
+      {'label': 'Dining out reduction (20%)', 'value': '120/mo'},
+    ];
+
+    // Enhance each insight with additional data
+    final insightsMapped = insights.map((insight) {
+      // Default insight data
+      Map<String, dynamic> insightData = {
+        'title': insight.title,
+        'description': insight.description,
+        'icon': insight.icon,
+        'color': insight.color,
+        'onDismiss': () => dashboardProvider.dismissInsight(insight),
+        'onAction': () => dashboardProvider.handleInsightAction(insight),
+        'actionLabel': insight.actionLabel,
+      };
+      
+      // Add specific chart data based on insight type
+      if (insight.title.contains('Spending') || insight.title.contains('spending')) {
+        insightData['chartType'] = 'line';
+        insightData['chartData'] = spendingTrendData;
+        insightData['learnMoreText'] = 'Your spending has decreased by 21% compared to last month. Keep up the good work! Setting a monthly budget and tracking expenses regularly can help maintain this positive trend.';
+      } else if (insight.title.contains('Categories') || insight.title.contains('categories') || insight.title.contains('breakdown')) {
+        insightData['chartType'] = 'pie';
+        insightData['chartData'] = categoryBreakdownData;
+        insightData['learnMoreText'] = 'Your largest spending category is Food at 30%. The average for users with similar income is 25%. Consider meal planning to bring this closer to the average.';
+      } else if (insight.title.contains('Save') || insight.title.contains('save') || insight.title.contains('saving')) {
+        insightData['chartType'] = 'list';
+        insightData['chartData'] = savingsOpportunities;
+        insightData['learnMoreText'] = 'We identified potential savings of up to 172.98 per month based on your subscription services and recent spending patterns. Consider reviewing these areas for cost reduction.';
+      }
+      
+      return insightData;
+    }).toList();
 
     return AIInsightsCard(insights: insightsMapped);
   }
