@@ -36,26 +36,24 @@ class _ExpenseChartCardState extends State<ExpenseChartCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildHeader(),
-        Material(
-          elevation: 4.0,
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.cardBackground,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.surface, width: 1.2),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.cardBackground,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: Colors.grey.withOpacity(0.15),
+              width: 1.0,
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildPieChart(),
-                const SizedBox(width: 18),
-                _buildLegend(total),
-              ],
-            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildPieChart(),
+              const SizedBox(width: 18),
+              _buildLegend(total),
+            ],
           ),
         ),
       ],

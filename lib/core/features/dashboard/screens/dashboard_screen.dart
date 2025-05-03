@@ -331,14 +331,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                 colors: [Color(0xFF235FA6), Color(0xFF1A4373)],
               ),
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.12),
-                  offset: const Offset(0, 2),
-                  blurRadius: 6,
-                  spreadRadius: 0,
-                ),
-              ],
+              border: Border.all(
+                color: Colors.white.withOpacity(0.1),
+                width: 1.0,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -481,14 +477,10 @@ class _DashboardScreenState extends State<DashboardScreen>
             decoration: BoxDecoration(
               color: AppColors.cardBackground,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  offset: const Offset(0, 2),
-                  blurRadius: 6,
-                  spreadRadius: 0,
-                ),
-              ],
+              border: Border.all(
+                color: Colors.grey.withOpacity(0.15),
+                width: 1.0,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -910,32 +902,24 @@ class _DashboardScreenState extends State<DashboardScreen>
                                         MainAxisSize
                                             .min, // Ensure minimal height
                                     children: [
-                                      const SizedBox(height: 12),
-                                      // Top summary cards section
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: _buildSummaryCards(context),
-                                      ),
-                                      const SizedBox(
-                                        height: 32,
-                                      ), // More space before chart
-                                      _buildFinancialSummary(
-                                        context,
-                                      ), // New financial summary section
-                                      const SizedBox(height: 32),
-                                      _buildExpenseChartPlaceholder(context),
-                                      const SizedBox(
-                                        height: 32,
-                                      ), // More space before activity
-                                      _buildRecentActivity(context),
-                                      const SizedBox(height: 32),
-                                      _buildQuickActions(context),
-                                      const SizedBox(height: 32),
-                                      _buildEnhancedAIInsights(
-                                        context,
-                                      ), // Using enhanced AI insights
-                                      // Add some bottom padding for better scrolling
-                                      const SizedBox(height: 24),
+                                       const SizedBox(height: 10),
+                                       // Top summary cards section
+                                       SizedBox(
+                                         width: double.infinity,
+                                         child: _buildSummaryCards(context),
+                                       ),
+                                       const SizedBox(height: 24),
+                                       _buildFinancialSummary(context),
+                                       const SizedBox(height: 24),
+                                       _buildExpenseChartPlaceholder(context),
+                                       const SizedBox(height: 24),
+                                       _buildRecentActivity(context),
+                                       const SizedBox(height: 24),
+                                       _buildQuickActions(context),
+                                       const SizedBox(height: 24),
+                                       _buildEnhancedAIInsights(context),
+                                       // Add some bottom padding for better scrolling
+                                       const SizedBox(height: 16),
                                     ],
                                   ),
                                 ),

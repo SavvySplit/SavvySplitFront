@@ -8,12 +8,27 @@ class AppTheme {
       primarySwatch: AppColors.primarySwatch,
       brightness: Brightness.light,
       textTheme: TextTheme(
+        // Display styles
+        displayLarge: AppStyles.displayLarge(context),
+        
+        // Headline styles
+        headlineLarge: AppStyles.headlineLarge(context),
+        headlineMedium: AppStyles.headlineMedium(context),
+        
+        // Title styles
         titleLarge: AppStyles.titleLarge(context),
         titleMedium: AppStyles.titleMedium(context),
         titleSmall: AppStyles.titleSmall(context),
+        
+        // Body styles
         bodyLarge: AppStyles.bodyLarge(context),
         bodyMedium: AppStyles.bodyMedium(context),
         bodySmall: AppStyles.bodySmall(context),
+        
+        // Label styles
+        labelLarge: AppStyles.labelLarge(context),
+        labelMedium: AppStyles.labelMedium(context),
+        labelSmall: AppStyles.labelSmall(context),
       ),
     );
   }
@@ -56,24 +71,27 @@ class AppTheme {
 
       // Text Colors
       textTheme: TextTheme(
-        titleLarge: AppStyles.titleLarge(
-          context,
-        ).copyWith(color: AppColors.textColor),
-        titleMedium: AppStyles.titleMedium(
-          context,
-        ).copyWith(color: AppColors.textColor),
-        titleSmall: AppStyles.titleSmall(
-          context,
-        ).copyWith(color: AppColors.secondaryTextColor),
-        bodyLarge: AppStyles.bodyLarge(
-          context,
-        ).copyWith(color: AppColors.textColor),
-        bodyMedium: AppStyles.bodyMedium(
-          context,
-        ).copyWith(color: AppColors.secondaryTextColor),
-        bodySmall: AppStyles.bodySmall(
-          context,
-        ).copyWith(color: AppColors.secondaryTextColor),
+        // Display styles
+        displayLarge: AppStyles.displayLarge(context).copyWith(color: AppColors.textColor),
+
+        // Headline styles
+        headlineLarge: AppStyles.headlineLarge(context).copyWith(color: AppColors.textColor),
+        headlineMedium: AppStyles.headlineMedium(context).copyWith(color: AppColors.textColor),
+        
+        // Title styles
+        titleLarge: AppStyles.titleLarge(context).copyWith(color: AppColors.textColor),
+        titleMedium: AppStyles.titleMedium(context).copyWith(color: AppColors.textColor),
+        titleSmall: AppStyles.titleSmall(context).copyWith(color: AppColors.secondaryTextColor),
+        
+        // Body styles
+        bodyLarge: AppStyles.bodyLarge(context).copyWith(color: AppColors.textColor),
+        bodyMedium: AppStyles.bodyMedium(context).copyWith(color: AppColors.secondaryTextColor),
+        bodySmall: AppStyles.bodySmall(context).copyWith(color: AppColors.secondaryTextColor),
+        
+        // Label styles
+        labelLarge: AppStyles.labelLarge(context).copyWith(color: AppColors.textColor),
+        labelMedium: AppStyles.labelMedium(context).copyWith(color: AppColors.secondaryTextColor),
+        labelSmall: AppStyles.labelSmall(context).copyWith(color: AppColors.secondaryTextColor),
       ),
 
       // Input Decoration Theme

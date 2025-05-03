@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../constants/colors.dart';
-import 'action_button.dart';
+import 'package:savvysplit/common/theme/app_colors.dart';
 
 class QuickActionsCard extends StatefulWidget {
   final List<Map<String, dynamic>> actions;
-  
+
   const QuickActionsCard({Key? key, required this.actions}) : super(key: key);
 
   @override
@@ -16,54 +15,34 @@ class _QuickActionsCardState extends State<QuickActionsCard> {
   final ScrollController _scrollController = ScrollController();
   // Current page for indicator
   int _currentPage = 0;
-  
+
   @override
   void initState() {
     super.initState();
     // Listen to scroll position changes
     _scrollController.addListener(_onScroll);
   }
-  
+
   @override
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
-  
+
   void _onScroll() {
     if (_scrollController.hasClients) {
-      // Calculate visible page more precisely
+      // Calculate which item is most visible
       final itemWidth = 116.0; // Width of button (100) + padding (16)
       final offset = _scrollController.offset;
-      
-      // Calculate which page is most visible in the viewport
-      // Using floor instead of round ensures the dot changes exactly when a new item becomes most visible
-      final newPage = (offset / itemWidth).floor();
-      
-      // Only update if the page has changed
-      if (newPage != _currentPage && newPage < _calculatePageCount()) {
+      final newPage = (offset / itemWidth).round();
+
+      if (newPage != _currentPage) {
         setState(() {
           _currentPage = newPage;
         });
       }
     }
-  }
-  
-  // Calculate number of pages based on viewport size and number of items
-  int _calculatePageCount() {
-    if (!_scrollController.hasClients || widget.actions.isEmpty) {
-      return 1;
-    }
-    
-    // Calculate how many items fit on screen
-    final viewportWidth = _scrollController.position.viewportDimension;
-    final itemWidth = 116.0; // Width of button (100) + padding (16)
-    final itemsPerPage = (viewportWidth / itemWidth).floor();
-    
-    // Calculate total pages needed (minimum 1)
-    int totalPages = (widget.actions.length / itemsPerPage).ceil();
-    return totalPages > 0 ? totalPages : 1;
   }
 
   @override
@@ -78,10 +57,14 @@ class _QuickActionsCardState extends State<QuickActionsCard> {
           decoration: BoxDecoration(
             color: AppColors.cardBackground,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: Colors.grey.withOpacity(0.15),
-              width: 1.0,
-            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                offset: const Offset(0, 4),
+                blurRadius: 12,
+                spreadRadius: 0,
+              ),
+            ],
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
@@ -91,11 +74,14 @@ class _QuickActionsCardState extends State<QuickActionsCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Introduction text to explain quick actions
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 12.0),
                     child: Text(
                       "Quick access to your most common financial tasks",
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                   // Horizontal scrollable row of action buttons with indicators
@@ -107,13 +93,18 @@ class _QuickActionsCardState extends State<QuickActionsCard> {
                           controller: _scrollController,
                           scrollDirection: Axis.horizontal,
                           physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.only(left: 4.0), // Add padding to start
+                          padding: const EdgeInsets.only(
+                            left: 4.0,
+                          ), // Add padding to start
                           itemCount: widget.actions.length,
                           itemBuilder: (context, index) {
                             final action = widget.actions[index];
                             return Padding(
                               // Add a visual indicator by showing a bit of the next button
-                              padding: const EdgeInsets.only(right: 12.0, left: 4.0),
+                              padding: const EdgeInsets.only(
+                                right: 12.0,
+                                left: 4.0,
+                              ),
                               child: SizedBox(
                                 width: 100, // Fixed width for each button
                                 child: ActionButton(
@@ -128,7 +119,7 @@ class _QuickActionsCardState extends State<QuickActionsCard> {
                           },
                         ),
                       ),
-                      
+
                       // Page indicator dots
                       if (widget.actions.length > 2)
                         Padding(
@@ -136,19 +127,23 @@ class _QuickActionsCardState extends State<QuickActionsCard> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: List.generate(
-                              // Calculate actual number of "pages" based on screen width
-                              // Each page is a group of buttons visible at once
-                              _calculatePageCount(),
-                              (index) => AnimatedContainer(
-                                duration: const Duration(milliseconds: 150),
-                                margin: const EdgeInsets.symmetric(horizontal: 3.0),
+                              widget.actions.length > 4
+                                  ? 4
+                                  : widget.actions.length,
+                              (index) => Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 4.0,
+                                ),
                                 height: 6.0,
-                                width: index == _currentPage ? 18.0 : 6.0, // Active dot is wider
+                                width: 6.0,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(3.0),
-                                  color: index == _currentPage
-                                      ? AppColors.accent
-                                      : AppColors.textSecondary.withOpacity(0.3),
+                                  shape: BoxShape.circle,
+                                  color:
+                                      index == _currentPage % 4
+                                          ? AppColors.accent
+                                          : AppColors.textSecondary.withOpacity(
+                                            0.3,
+                                          ),
                                 ),
                               ),
                             ),
@@ -172,9 +167,13 @@ class _QuickActionsCardState extends State<QuickActionsCard> {
         children: [
           _buildAccentBar(),
           const SizedBox(width: 8),
-          Text(
+          const Text(
             "Quick Actions",
-            style: Theme.of(context).textTheme.titleLarge,
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),

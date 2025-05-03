@@ -16,34 +16,32 @@ class ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 4.0,
-      borderRadius: BorderRadius.circular(8),
-      color: AppColors.cardBackground,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.surface, width: 1.2),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.grey.withOpacity(0.15),
+          width: 1.0,
         ),
-        child: Column(
-          children: [
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: activities.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 14),
-              itemBuilder: (context, index) => ActivityItem(
-                activity: activities[index],
-                index: index,
-                onTap: onActivityTap,
-                onDismiss: onActivityDismiss,
-              ),
+      ),
+      child: Column(
+        children: [
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: activities.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 14),
+            itemBuilder: (context, index) => ActivityItem(
+              activity: activities[index],
+              index: index,
+              onTap: onActivityTap,
+              onDismiss: onActivityDismiss,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

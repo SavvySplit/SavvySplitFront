@@ -16,33 +16,31 @@ class FinancialSummaryCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildHeader(),
-        Material(
-          elevation: 4.0,
-          borderRadius: BorderRadius.circular(8),
-          color: AppColors.cardBackground,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.cardBackground,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.surface, width: 1.2),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.cardBackground,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: Colors.grey.withOpacity(0.15),
+              width: 1.0,
             ),
-            child: Column(
-              children: progressItems.map((item) {
-                return Column(
-                  children: [
-                    FinancialProgressBar(
-                      title: item['title'] as String,
-                      progress: item['progress'] as double,
-                      description: item['description'] as String,
-                      color: item['color'] as Color,
-                    ),
-                    if (progressItems.last != item) const SizedBox(height: 16),
-                  ],
-                );
-              }).toList(),
-            ),
+          ),
+          child: Column(
+            children: progressItems.map((item) {
+              return Column(
+                children: [
+                  FinancialProgressBar(
+                    title: item['title'] as String,
+                    progress: item['progress'] as double,
+                    description: item['description'] as String,
+                    color: item['color'] as Color,
+                  ),
+                  if (progressItems.last != item) const SizedBox(height: 16),
+                ],
+              );
+            }).toList(),
           ),
         ),
       ],
