@@ -11,7 +11,36 @@ class WalletScreen extends StatefulWidget {
   State<WalletScreen> createState() => _WalletScreenState();
 }
 
-class _WalletScreenState extends State<WalletScreen> {
+class _WalletScreenState extends State<WalletScreen>
+    with SingleTickerProviderStateMixin {
+  // Tab controller for wallet sections
+  late TabController _tabController;
+  final List<String> _tabs = [
+    'Overview',
+    'Transactions',
+    'Budgets',
+    'Payment Methods',
+    'Recurring',
+    'Goals',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: _tabs.length, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   final List<Transaction> _transactions = [
     Transaction(
       id: '1',
@@ -94,42 +123,293 @@ class _WalletScreenState extends State<WalletScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 10.0,
+                  horizontal: 8.0,
+                  vertical: 8.0,
                 ),
                 child: _buildHeader(context),
               ),
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 8),
-                        _buildBalanceCard(),
-                        const SizedBox(height: 20),
-                        _buildQuickActions(),
-                        const SizedBox(height: 32),
-                        _buildChartSection(),
-                        const SizedBox(height: 32),
-                        _buildCategoryBreakdown(),
-                        const SizedBox(height: 32),
-                        _buildBudgetTracker(),
-                        const SizedBox(height: 32),
-                        _buildUpcomingBills(),
-                        const SizedBox(height: 32),
-                        _buildTransactionList(),
-                        // Add extra bottom padding to ensure content isn't cut off by the navigation bar
-                        const SizedBox(height: 100),
-                      ],
-                    ),
+              // Tab bar
+              Container(
+                margin: const EdgeInsets.only(
+                  right: 8.0,
+                  left: 0.0,
+                  top: 12.0,
+                  bottom: 12.0,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.surface.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(10.0),
+                  border: Border.all(color: AppColors.borderPrimary, width: 0.8),
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Colors.white.withOpacity(0.6),
+                  labelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
                   ),
+                  unselectedLabelStyle: const TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 12,
+                  ),
+                  indicator: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    gradient: const LinearGradient(
+                      colors: [
+                        AppColors.buttonGradientStart,
+                        AppColors.buttonGradientEnd,
+                      ],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.accent.withOpacity(0.3),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 6,
+                  ),
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  dividerColor: Colors.transparent,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  tabs:
+                      _tabs
+                          .map(
+                            (String tab) => Tab(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 6.0,
+                                ),
+                                child: Text(tab),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                ),
+              ),
+              // Tab content
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    // Overview Tab
+                    SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 8),
+                            _buildBalanceCard(),
+                            const SizedBox(height: 20),
+                            _buildQuickActions(),
+                            const SizedBox(height: 32),
+                            _buildChartSection(),
+                            const SizedBox(height: 32),
+                            _buildCategoryBreakdown(),
+                            const SizedBox(height: 32),
+                            _buildBudgetTracker(),
+                            const SizedBox(height: 32),
+                            _buildUpcomingBills(),
+                            const SizedBox(height: 32),
+                            _buildTransactionList(),
+                            // Add extra bottom padding to ensure content isn't cut off by the navigation bar
+                            const SizedBox(height: 100),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Transactions Tab
+                    _buildTransactionsTab(),
+                    // Budgets Tab
+                    _buildBudgetsTab(),
+                    // Payment Methods Tab
+                    _buildPaymentMethodsTab(),
+                    // Recurring Payments Tab
+                    _buildRecurringPaymentsTab(),
+                    // Savings Goals Tab
+                    _buildSavingsGoalsTab(),
+                  ],
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // Tab content methods
+  Widget _buildTransactionsTab() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.receipt_long,
+              size: 64,
+              color: AppColors.textSecondary.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Transaction History',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'View and manage all your transactions with advanced filtering',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBudgetsTab() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.pie_chart,
+              size: 64,
+              color: AppColors.textSecondary.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Budget Management',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Create, edit, and track monthly budgets by category',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentMethodsTab() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.credit_card,
+              size: 64,
+              color: AppColors.textSecondary.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Payment Methods',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Manage linked cards, accounts, and payment services',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecurringPaymentsTab() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.repeat,
+              size: 64,
+              color: AppColors.textSecondary.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Recurring Payments',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Track and manage subscriptions and recurring bills',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSavingsGoalsTab() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.savings,
+              size: 64,
+              color: AppColors.textSecondary.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Savings Goals',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Set up and monitor progress toward financial goals',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+            ),
+          ],
         ),
       ),
     );
@@ -209,10 +489,7 @@ class _WalletScreenState extends State<WalletScreen> {
           ],
         ),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: AppColors.gradientEnd.withOpacity(0.13),
-          width: 1.2,
-        ),
+        border: Border.all(color: AppColors.borderPrimary.withOpacity(0.5), width: 1.0),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,97 +612,92 @@ class _WalletScreenState extends State<WalletScreen> {
             ],
           ),
         ),
-        Material(
-          elevation: 4.0,
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.cardBackground,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.surface, width: 1.2),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Period selector
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Cash Flow',
-                      style: TextStyle(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                      ),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.cardBackground,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColors.borderPrimary.withOpacity(0.5), width: 1.0),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Period selector
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Cash Flow',
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
                     ),
-                    Container(
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: AppColors.surface.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        children:
-                            _chartPeriods.map((period) {
-                              final isSelected = _selectedPeriod == period;
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedPeriod = period;
-                                  });
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
+                  ),
+                  Container(
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: AppColors.surface.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      children:
+                          _chartPeriods.map((period) {
+                            final isSelected = _selectedPeriod == period;
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedPeriod = period;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color:
+                                      isSelected
+                                          ? AppColors.accentGradientMiddle
+                                          : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Text(
+                                  period,
+                                  style: TextStyle(
                                     color:
                                         isSelected
-                                            ? AppColors.accentGradientMiddle
-                                            : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Text(
-                                    period,
-                                    style: TextStyle(
-                                      color:
-                                          isSelected
-                                              ? Colors.white
-                                              : AppColors.textSecondary,
-                                      fontWeight:
-                                          isSelected
-                                              ? FontWeight.w600
-                                              : FontWeight.w400,
-                                      fontSize: 12,
-                                    ),
+                                            ? Colors.white
+                                            : AppColors.textSecondary,
+                                    fontWeight:
+                                        isSelected
+                                            ? FontWeight.w600
+                                            : FontWeight.w400,
+                                    fontSize: 12,
                                   ),
                                 ),
-                              );
-                            }).toList(),
-                      ),
+                              ),
+                            );
+                          }).toList(),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                // Line chart
-                SizedBox(height: 180, child: LineChart(_buildLineChartData())),
-                const SizedBox(height: 15),
-                // Legend
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildLegendItem('Income', AppColors.success),
-                    const SizedBox(width: 24),
-                    _buildLegendItem('Expenses', AppColors.error),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Line chart
+              SizedBox(height: 180, child: LineChart(_buildLineChartData())),
+              const SizedBox(height: 15),
+              // Legend
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildLegendItem('Income', AppColors.success),
+                  const SizedBox(width: 24),
+                  _buildLegendItem('Expenses', AppColors.error),
+                ],
+              ),
+            ],
           ),
         ),
       ],
@@ -616,8 +888,10 @@ class _WalletScreenState extends State<WalletScreen> {
               return LineTooltipItem(
                 '\$${spot.y.toInt()}',
                 TextStyle(
-                  color: isIncome ? AppColors.success : AppColors.error,
-                  fontWeight: FontWeight.w600,
+                  color:
+                      isIncome ? AppColors.success : AppColors.error,
+                  fontWeight:
+                      isIncome ? FontWeight.w600 : FontWeight.w400,
                   fontSize: 12,
                 ),
               );
@@ -788,85 +1062,83 @@ class _WalletScreenState extends State<WalletScreen> {
             ],
           ),
         ),
-        Material(
-          elevation: 4.0,
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.cardBackground,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.surface, width: 1.2),
-            ),
-            child: Row(
-              children: [
-                // Pie chart
-                SizedBox(
-                  height: 120,
-                  width: 120,
-                  child: PieChart(
-                    PieChartData(
-                      sections:
-                          categories.map((category) {
-                            return PieChartSectionData(
-                              color: category['color'] as Color,
-                              value: (category['percentage'] is int) ? (category['percentage'] as int).toDouble() : category['percentage'] as double,
-                              title: '',
-                              radius: 38,
-                              showTitle: false,
-                            );
-                          }).toList(),
-                      sectionsSpace: 2,
-                      centerSpaceRadius: 24,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 18),
-                // Legend
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children:
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.cardBackground,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColors.borderPrimary, width: 1.0),
+          ),
+          child: Row(
+            children: [
+              // Pie chart
+              SizedBox(
+                height: 120,
+                width: 120,
+                child: PieChart(
+                  PieChartData(
+                    sections:
                         categories.map((category) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6.0),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 14,
-                                  height: 14,
-                                  decoration: BoxDecoration(
-                                    color: category['color'] as Color,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  category['name'] as String,
-                                  style: const TextStyle(
-                                    color: AppColors.textPrimary,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Text(
-                                  '\$${(category['amount'] is int) ? category['amount'] as int : (category['amount'] as double).toInt()}',
-                                  style: const TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          return PieChartSectionData(
+                            color: category['color'] as Color,
+                            value:
+                                (category['percentage'] is int)
+                                    ? (category['percentage'] as int).toDouble()
+                                    : category['percentage'] as double,
+                            title: '',
+                            radius: 38,
+                            showTitle: false,
                           );
                         }).toList(),
+                    sectionsSpace: 2,
+                    centerSpaceRadius: 24,
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 18),
+              // Legend
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children:
+                      categories.map((category) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6.0),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 14,
+                                height: 14,
+                                decoration: BoxDecoration(
+                                  color: category['color'] as Color,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                category['name'] as String,
+                                style: const TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                '\$${(category['amount'] is int) ? category['amount'] as int : (category['amount'] as double).toInt()}',
+                                style: const TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -904,124 +1176,119 @@ class _WalletScreenState extends State<WalletScreen> {
             ],
           ),
         ),
-        Material(
-          elevation: 4.0,
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.cardBackground,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.surface, width: 1.2),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Total Budget',
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.cardBackground,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColors.borderPrimary.withOpacity(0.5), width: 1.0),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Total Budget',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '\$${budgetData['total']?.toInt()}',
-                          style: const TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        const Text(
-                          'Remaining',
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '\$${budgetData['remaining']?.toInt()}',
-                          style: TextStyle(
-                            color:
-                                budgetData['remaining']! > 500
-                                    ? AppColors.success
-                                    : AppColors.error,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                // Progress bar
-                Stack(
-                  children: [
-                    // Background
-                    Container(
-                      height: 12,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(6),
                       ),
-                    ),
-                    // Progress
-                    Container(
-                      height: 12,
-                      width:
-                          MediaQuery.of(context).size.width *
-                          (budgetData['percentage']! / 100) *
-                          0.7, // Adjust for padding
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors:
-                              budgetData['percentage']! < 80
-                                  ? [
-                                    AppColors.success,
-                                    AppColors.success.withOpacity(0.7),
-                                  ]
-                                  : [
-                                    AppColors.error,
-                                    AppColors.error.withOpacity(0.7),
-                                  ],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
+                      const SizedBox(height: 4),
+                      Text(
+                        '\$${budgetData['total']?.toInt()}',
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
                         ),
-                        borderRadius: BorderRadius.circular(6),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  '${budgetData['percentage']?.toStringAsFixed(1)}% of budget used',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                    ],
                   ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const Text(
+                        'Remaining',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '\$${budgetData['remaining']?.toInt()}',
+                        style: TextStyle(
+                          color:
+                              budgetData['remaining']! > 500
+                                  ? AppColors.success
+                                  : AppColors.error,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Progress bar
+              Stack(
+                children: [
+                  // Background
+                  Container(
+                    height: 12,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  // Progress
+                  Container(
+                    height: 12,
+                    width:
+                        MediaQuery.of(context).size.width *
+                        (budgetData['percentage']! / 100) *
+                        0.7, // Adjust for padding
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors:
+                            budgetData['percentage']! < 80
+                                ? [
+                                  AppColors.success,
+                                  AppColors.success.withOpacity(0.7),
+                                ]
+                                : [
+                                  AppColors.error,
+                                  AppColors.error.withOpacity(0.7),
+                                ],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '${budgetData['percentage']?.toStringAsFixed(1)}% of budget used',
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],
@@ -1076,10 +1343,10 @@ class _WalletScreenState extends State<WalletScreen> {
               const Spacer(),
               TextButton(
                 onPressed: () {},
-                child: const Text(
+                child: Text(
                   'See All',
                   style: TextStyle(
-                    color: Colors.tealAccent,
+                    color: AppColors.textSecondary,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -1089,29 +1356,28 @@ class _WalletScreenState extends State<WalletScreen> {
           ),
         ),
         // Limit to 2 bills to avoid overflow
-        Column(
-          children:
-              List.generate(upcomingBills.length > 2 ? 2 : upcomingBills.length, (
-                index,
-              ) {
-                final bill = upcomingBills[index];
-                return Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(14),
-                    onTap: () {},
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.cardBackground,
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.07),
-                            blurRadius: 7,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: AppColors.cardBackground,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.borderPrimary, width: 1.0),
+          ),
+          child: Column(
+            children:
+                List.generate(upcomingBills.length > 2 ? 2 : upcomingBills.length, (
+                  index,
+                ) {
+                  final bill = upcomingBills[index];
+                  return Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: () {},
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.cardBackground,
+                        ),
                       padding: const EdgeInsets.symmetric(
                         vertical: 14,
                         horizontal: 16,
@@ -1198,10 +1464,10 @@ class _WalletScreenState extends State<WalletScreen> {
               const Spacer(),
               TextButton(
                 onPressed: () {},
-                child: const Text(
+                child: Text(
                   'See All',
                   style: TextStyle(
-                    color: Colors.tealAccent,
+                    color: AppColors.textSecondary,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -1211,22 +1477,23 @@ class _WalletScreenState extends State<WalletScreen> {
           ),
         ),
         // Limit to 3 transactions to avoid overflow
-        Column(
-          children:
-              List.generate(
-                _transactions.length > 3 ? 3 : _transactions.length,
-                (index) {
-                  final transaction = _transactions[index];
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: AppColors.cardBackground,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.borderPrimary, width: 1.0),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            children:
+                List.generate(
+                  _transactions.length > 3 ? 3 : _transactions.length,
+                  (index) {
+                    final transaction = _transactions[index];
                   return Padding(
                     padding: EdgeInsets.only(
-                      bottom:
-                          index <
-                                  (_transactions.length > 3
-                                          ? 2
-                                          : _transactions.length) -
-                                      1
-                              ? 14
-                              : 0,
+                      bottom: 12,
                     ),
                     child: _buildTransactionItem(transaction),
                   );
@@ -1243,8 +1510,7 @@ class _WalletScreenState extends State<WalletScreen> {
       symbol: '\$',
     ).format(transaction.amount.abs());
     final formattedDate = DateFormat('MMM dd').format(transaction.date);
-    final color =
-        isIncome ? Colors.greenAccent.shade200 : Colors.redAccent.shade100;
+    final color = isIncome ? Colors.greenAccent.shade200 : AppColors.error;
 
     return Material(
       color: Colors.transparent,
@@ -1254,14 +1520,10 @@ class _WalletScreenState extends State<WalletScreen> {
         child: Container(
           decoration: BoxDecoration(
             color: AppColors.cardBackground,
-            borderRadius: BorderRadius.circular(14),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.07),
-                blurRadius: 7,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            borderRadius: index == 0 ? const BorderRadius.only(
+              topLeft: Radius.circular(14),
+              topRight: Radius.circular(14),
+            ) : BorderRadius.zero,
           ),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           child: Row(

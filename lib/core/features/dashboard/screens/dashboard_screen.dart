@@ -718,9 +718,95 @@ class _DashboardScreenState extends State<DashboardScreen>
   }
 
   void _showActivityDetails(Map<String, dynamic> activity) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Details for ${activity['label']}')));
+    // Format the date if it exists
+    String formattedDate = '';
+    if (activity['date'] != null) {
+      try {
+        final date = activity['date'] as DateTime;
+        formattedDate = DateFormat('MMM d, yyyy').format(date);
+      } catch (e) {
+        // If date parsing fails, leave empty
+      }
+    }
+    
+    // Get the category and amount
+    final category = activity['category'] as String? ?? 'Unknown';
+    final amount = activity['amount'] as String? ?? '';
+    
+    // Show enhanced snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.only(bottom: 70.0, left: 15.0, right: 15.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: AppColors.cardBackground,
+        duration: const Duration(seconds: 4),
+        content: Row(
+          children: [
+            // Left side - icon
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: activity['color'] ?? AppColors.accent,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                activity['icon'] ?? Icons.receipt_long,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Middle - activity details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    activity['label'] ?? 'Unknown Activity',
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '$category${formattedDate.isNotEmpty ? ' • $formattedDate' : ''}',
+                    style: TextStyle(
+                      color: AppColors.textPrimary.withOpacity(0.7),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Right side - amount
+            Text(
+              amount,
+              style: TextStyle(
+                color: amount.startsWith('+') ? AppColors.success : AppColors.error,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+        action: SnackBarAction(
+          label: 'View Details',
+          textColor: AppColors.accent,
+          onPressed: () {
+            // Navigate to detailed view (to be implemented)
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Navigating to transaction details (to be implemented)')),
+            );
+          },
+        ),
+      ),
+    );
   }
 
   void _removeActivity(int index, Map<String, dynamic> item) {
@@ -730,11 +816,64 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
     dashboardProvider.deleteActivity(index);
 
+    // Extract necessary data
+    final String label = item['label'] as String;
+    
+    // Show enhanced snackbar with undo functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${item['label']} deleted'),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.only(bottom: 70.0, left: 15.0, right: 15.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: AppColors.cardBackground,
+        duration: const Duration(seconds: 6), // Longer duration for undo
+        content: Row(
+          children: [
+            // Success icon
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.red.shade400,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(
+                Icons.delete_outline,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Message
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Transaction Deleted',
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '"$label" has been removed',
+                    style: TextStyle(
+                      color: AppColors.textPrimary.withOpacity(0.7),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
         action: SnackBarAction(
-          label: 'Undo',
+          label: 'UNDO',
+          textColor: AppColors.accent,
           onPressed: () {
             // Convert back to Activity and restore
             final activity = Activity(
