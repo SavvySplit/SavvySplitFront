@@ -13,6 +13,10 @@ class AuthProvider extends ChangeNotifier {
   String? _userId;
   String? get userId => _userId;
   
+  // User name
+  String? _userName;
+  String? get userName => _userName;
+  
   // You can expand this with more user properties as needed
   // User? _currentUser;
   // User? get currentUser => _currentUser;
@@ -33,6 +37,9 @@ class AuthProvider extends ChangeNotifier {
   Future<void> registerUser(String name, String email, String password) async {
     setLoading(true);
     try {
+      // Store user name
+      _userName = name;
+      
       final response = await ApiService.register(
         name: name,
         email: email,
@@ -99,6 +106,11 @@ class AuthProvider extends ChangeNotifier {
             response.data['user'] is Map && 
             response.data['user']['id'] != null) {
           _userId = response.data['user']['id'].toString();
+          
+          // Store user name if provided in the response
+          if (response.data['user']['name'] != null) {
+            _userName = response.data['user']['name'].toString();
+          }
         } else {
           // Fallback ID if not provided by API
           _userId = 'user_${DateTime.now().millisecondsSinceEpoch}';

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../constants/colors.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import '../../../../data/providers/auth_provider.dart';
 
 // Widget components
 import '../widgets/activity_card.dart';
@@ -276,14 +277,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                 ),
               ),
               const SizedBox(width: 8),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.person, color: Colors.white),
-                style: IconButton.styleFrom(
-                  backgroundColor: AppColors.secondary.withOpacity(0.22),
-                  shape: const CircleBorder(),
-                ),
-              ),
+              _buildUserAvatar(context),
             ],
           ),
         ],
@@ -310,8 +304,9 @@ class _DashboardScreenState extends State<DashboardScreen>
     }
 
     // Make the card height more flexible
-    const double cardHeight = 180.0; // Further increased to handle content better
-    
+    const double cardHeight =
+        180.0; // Further increased to handle content better
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -696,7 +691,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   String _getTimeBasedGreeting() {
     final hour = DateTime.now().hour;
     String timeGreeting;
-    
+
     if (hour < 12) {
       timeGreeting = 'Good morning';
     } else if (hour < 17) {
@@ -704,8 +699,22 @@ class _DashboardScreenState extends State<DashboardScreen>
     } else {
       timeGreeting = 'Good evening';
     }
-    
-    return '$timeGreeting, Ahmed!';
+
+    // Get user's name from auth provider
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    String? userName = authProvider.userName;
+
+    // Extract first name (if there are multiple names)
+    String firstName = '';
+    if (userName != null && userName.isNotEmpty) {
+      // Get first word as first name
+      firstName = userName.split(' ').first;
+    }
+
+    // Return greeting with user's first name or default message
+    return firstName.isNotEmpty
+        ? '$timeGreeting, $firstName!'
+        : '$timeGreeting!';
   }
 
   void _showActivityDetails(Map<String, dynamic> activity) {
@@ -743,10 +752,67 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
+  Widget _buildUserAvatar(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    // Get the user's name from the auth provider
+    String? userName = authProvider.userName;
+
+    // Default initial if no user name is available
+    String initial = 'U';
+
+    // Extract first letter of user name if available
+    if (userName != null && userName.isNotEmpty) {
+      initial = userName[0].toUpperCase();
+    }
+
+    // Return a circular avatar with the initial
+    return GestureDetector(
+      onTap: () {
+        // Navigate to profile screen or show profile options
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Navigate to Profile')));
+      },
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.accentGradientStart,
+              AppColors.accentGradientEnd,
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.accentGradientEnd.withOpacity(0.3),
+              blurRadius: 8,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            initial,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildQuickActions(BuildContext context) {
     final actionButtons = [
       {
-        'icon': Icons.add,
+        'icon': Icons.add_circle,
         'label': 'Add Expense',
         'colorStart': AppColors.accentGradientStart,
         'colorEnd': AppColors.accentGradientEnd,
@@ -798,7 +864,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   Widget _buildEnhancedAIInsights(BuildContext context) {
     final dashboardProvider = Provider.of<DashboardProvider>(context);
     final insights = dashboardProvider.insights;
-    
+
     // Create sample chart data for enhanced insights
     final List<Map<String, dynamic>> spendingTrendData = [
       {'label': 'Jan', 'value': 1200},
@@ -811,12 +877,22 @@ class _DashboardScreenState extends State<DashboardScreen>
 
     final List<Map<String, dynamic>> categoryBreakdownData = [
       {'label': 'Food', 'value': 450, 'percentage': 30, 'color': 0xFF4CAF50},
-      {'label': 'Transport', 'value': 300, 'percentage': 20, 'color': 0xFF2196F3},
-      {'label': 'Shopping', 'value': 225, 'percentage': 15, 'color': 0xFFFFC107},
+      {
+        'label': 'Transport',
+        'value': 300,
+        'percentage': 20,
+        'color': 0xFF2196F3,
+      },
+      {
+        'label': 'Shopping',
+        'value': 225,
+        'percentage': 15,
+        'color': 0xFFFFC107,
+      },
       {'label': 'Bills', 'value': 375, 'percentage': 25, 'color': 0xFFFF5722},
       {'label': 'Other', 'value': 150, 'percentage': 10, 'color': 0xFF9E9E9E},
     ];
-    
+
     final List<Map<String, dynamic>> savingsOpportunities = [
       {'label': 'Coffee subscriptions', 'value': '22.99/mo'},
       {'label': 'Unused streaming services', 'value': '29.99/mo'},
@@ -824,35 +900,44 @@ class _DashboardScreenState extends State<DashboardScreen>
     ];
 
     // Enhance each insight with additional data
-    final insightsMapped = insights.map((insight) {
-      // Default insight data
-      Map<String, dynamic> insightData = {
-        'title': insight.title,
-        'description': insight.description,
-        'icon': insight.icon,
-        'color': insight.color,
-        'onDismiss': () => dashboardProvider.dismissInsight(insight),
-        'onAction': () => dashboardProvider.handleInsightAction(insight),
-        'actionLabel': insight.actionLabel,
-      };
-      
-      // Add specific chart data based on insight type
-      if (insight.title.contains('Spending') || insight.title.contains('spending')) {
-        insightData['chartType'] = 'line';
-        insightData['chartData'] = spendingTrendData;
-        insightData['learnMoreText'] = 'Your spending has decreased by 21% compared to last month. Keep up the good work! Setting a monthly budget and tracking expenses regularly can help maintain this positive trend.';
-      } else if (insight.title.contains('Categories') || insight.title.contains('categories') || insight.title.contains('breakdown')) {
-        insightData['chartType'] = 'pie';
-        insightData['chartData'] = categoryBreakdownData;
-        insightData['learnMoreText'] = 'Your largest spending category is Food at 30%. The average for users with similar income is 25%. Consider meal planning to bring this closer to the average.';
-      } else if (insight.title.contains('Save') || insight.title.contains('save') || insight.title.contains('saving')) {
-        insightData['chartType'] = 'list';
-        insightData['chartData'] = savingsOpportunities;
-        insightData['learnMoreText'] = 'We identified potential savings of up to 172.98 per month based on your subscription services and recent spending patterns. Consider reviewing these areas for cost reduction.';
-      }
-      
-      return insightData;
-    }).toList();
+    final insightsMapped =
+        insights.map((insight) {
+          // Default insight data
+          Map<String, dynamic> insightData = {
+            'title': insight.title,
+            'description': insight.description,
+            'icon': insight.icon,
+            'color': insight.color,
+            'onDismiss': () => dashboardProvider.dismissInsight(insight),
+            'onAction': () => dashboardProvider.handleInsightAction(insight),
+            'actionLabel': insight.actionLabel,
+          };
+
+          // Add specific chart data based on insight type
+          if (insight.title.contains('Spending') ||
+              insight.title.contains('spending')) {
+            insightData['chartType'] = 'line';
+            insightData['chartData'] = spendingTrendData;
+            insightData['learnMoreText'] =
+                'Your spending has decreased by 21% compared to last month. Keep up the good work! Setting a monthly budget and tracking expenses regularly can help maintain this positive trend.';
+          } else if (insight.title.contains('Categories') ||
+              insight.title.contains('categories') ||
+              insight.title.contains('breakdown')) {
+            insightData['chartType'] = 'pie';
+            insightData['chartData'] = categoryBreakdownData;
+            insightData['learnMoreText'] =
+                'Your largest spending category is Food at 30%. The average for users with similar income is 25%. Consider meal planning to bring this closer to the average.';
+          } else if (insight.title.contains('Save') ||
+              insight.title.contains('save') ||
+              insight.title.contains('saving')) {
+            insightData['chartType'] = 'list';
+            insightData['chartData'] = savingsOpportunities;
+            insightData['learnMoreText'] =
+                'We identified potential savings of up to 172.98 per month based on your subscription services and recent spending patterns. Consider reviewing these areas for cost reduction.';
+          }
+
+          return insightData;
+        }).toList();
 
     return AIInsightsCard(insights: insightsMapped);
   }
@@ -935,24 +1020,24 @@ class _DashboardScreenState extends State<DashboardScreen>
                                         MainAxisSize
                                             .min, // Ensure minimal height
                                     children: [
-                                       const SizedBox(height: 10),
-                                       // Top summary cards section
-                                       SizedBox(
-                                         width: double.infinity,
-                                         child: _buildSummaryCards(context),
-                                       ),
-                                       const SizedBox(height: 24),
-                                       _buildFinancialSummary(context),
-                                       const SizedBox(height: 24),
-                                       _buildExpenseChartPlaceholder(context),
-                                       const SizedBox(height: 24),
-                                       _buildRecentActivity(context),
-                                       const SizedBox(height: 24),
-                                       _buildQuickActions(context),
-                                       const SizedBox(height: 24),
-                                       _buildEnhancedAIInsights(context),
-                                       // Add some bottom padding for better scrolling
-                                       const SizedBox(height: 16),
+                                      const SizedBox(height: 10),
+                                      // Top summary cards section
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: _buildSummaryCards(context),
+                                      ),
+                                      const SizedBox(height: 24),
+                                      _buildFinancialSummary(context),
+                                      const SizedBox(height: 24),
+                                      _buildExpenseChartPlaceholder(context),
+                                      const SizedBox(height: 24),
+                                      _buildRecentActivity(context),
+                                      const SizedBox(height: 24),
+                                      _buildQuickActions(context),
+                                      const SizedBox(height: 24),
+                                      _buildEnhancedAIInsights(context),
+                                      // Add some bottom padding for better scrolling
+                                      const SizedBox(height: 16),
                                     ],
                                   ),
                                 ),
