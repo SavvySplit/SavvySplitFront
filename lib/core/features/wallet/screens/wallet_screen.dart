@@ -139,7 +139,10 @@ class _WalletScreenState extends State<WalletScreen>
                 decoration: BoxDecoration(
                   color: AppColors.surface.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(10.0),
-                  border: Border.all(color: AppColors.borderPrimary, width: 0.8),
+                  border: Border.all(
+                    color: AppColors.borderPrimary,
+                    width: 0.8,
+                  ),
                 ),
                 child: TabBar(
                   controller: _tabController,
@@ -489,7 +492,10 @@ class _WalletScreenState extends State<WalletScreen>
           ],
         ),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.borderPrimary.withOpacity(0.5), width: 1.0),
+        border: Border.all(
+          color: AppColors.borderPrimary.withOpacity(0.5),
+          width: 1.0,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -618,7 +624,10 @@ class _WalletScreenState extends State<WalletScreen>
           decoration: BoxDecoration(
             color: AppColors.cardBackground,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.borderPrimary.withOpacity(0.5), width: 1.0),
+            border: Border.all(
+              color: AppColors.borderPrimary.withOpacity(0.5),
+              width: 1.0,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -636,12 +645,14 @@ class _WalletScreenState extends State<WalletScreen>
                     ),
                   ),
                   Container(
-                    height: 32,
+                    height: 28,
                     decoration: BoxDecoration(
                       color: AppColors.surface.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppColors.borderPrimary.withOpacity(0.3), width: 0.5),
                     ),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children:
                           _chartPeriods.map((period) {
                             final isSelected = _selectedPeriod == period;
@@ -651,30 +662,46 @@ class _WalletScreenState extends State<WalletScreen>
                                   _selectedPeriod = period;
                                 });
                               },
-                              child: Container(
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 250),
+                                curve: Curves.easeInOut,
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
+                                  horizontal: 10,
+                                  vertical: 5,
                                 ),
                                 decoration: BoxDecoration(
-                                  color:
-                                      isSelected
-                                          ? AppColors.accentGradientMiddle
-                                          : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(16),
+                                  gradient: isSelected
+                                      ? const LinearGradient(
+                                          colors: [
+                                            AppColors.buttonGradientStart,
+                                            AppColors.buttonGradientEnd,
+                                          ],
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
+                                        )
+                                      : null,
+                                  color: isSelected ? null : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(14),
+                                  boxShadow: isSelected
+                                      ? [
+                                          BoxShadow(
+                                            color: AppColors.accent.withOpacity(0.3),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 1),
+                                          ),
+                                        ]
+                                      : null,
                                 ),
                                 child: Text(
                                   period,
                                   style: TextStyle(
-                                    color:
-                                        isSelected
-                                            ? Colors.white
-                                            : AppColors.textSecondary,
-                                    fontWeight:
-                                        isSelected
-                                            ? FontWeight.w600
-                                            : FontWeight.w400,
-                                    fontSize: 12,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : AppColors.textSecondary,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                    fontSize: 11,
                                   ),
                                 ),
                               ),
@@ -888,10 +915,8 @@ class _WalletScreenState extends State<WalletScreen>
               return LineTooltipItem(
                 '\$${spot.y.toInt()}',
                 TextStyle(
-                  color:
-                      isIncome ? AppColors.success : AppColors.error,
-                  fontWeight:
-                      isIncome ? FontWeight.w600 : FontWeight.w400,
+                  color: isIncome ? AppColors.success : AppColors.error,
+                  fontWeight: isIncome ? FontWeight.w600 : FontWeight.w400,
                   fontSize: 12,
                 ),
               );
@@ -1182,7 +1207,10 @@ class _WalletScreenState extends State<WalletScreen>
           decoration: BoxDecoration(
             color: AppColors.cardBackground,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.borderPrimary.withOpacity(0.5), width: 1.0),
+            border: Border.all(
+              color: AppColors.borderPrimary.withOpacity(0.5),
+              width: 1.0,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1365,77 +1393,81 @@ class _WalletScreenState extends State<WalletScreen>
           ),
           child: Column(
             children:
-                List.generate(upcomingBills.length > 2 ? 2 : upcomingBills.length, (
-                  index,
-                ) {
-                  final bill = upcomingBills[index];
-                  return Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(14),
-                      onTap: () {},
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.cardBackground,
+                List.generate(
+                  upcomingBills.length > 2 ? 2 : upcomingBills.length,
+                  (index) {
+                    final bill = upcomingBills[index];
+                    return Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(14),
+                        onTap: () {},
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.cardBackground,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 16,
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: (bill['color'] as Color).withOpacity(
+                                    0.18,
+                                  ),
+                                  shape: BoxShape.circle,
+                                ),
+                                padding: const EdgeInsets.all(10),
+                                child: Icon(
+                                  bill['icon'] as IconData,
+                                  color: bill['color'] as Color,
+                                  size: 22,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      bill['name'] as String,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15.5,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'Due on ${bill['date']}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 12.5,
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                '\$${(bill['amount'] is int) ? (bill['amount'] as int).toDouble().toStringAsFixed(2) : (bill['amount'] as double).toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 15.5,
+                                  color: AppColors.error,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 14,
-                        horizontal: 16,
                       ),
-                      child: Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: (bill['color'] as Color).withOpacity(0.18),
-                              shape: BoxShape.circle,
-                            ),
-                            padding: const EdgeInsets.all(10),
-                            child: Icon(
-                              bill['icon'] as IconData,
-                              color: bill['color'] as Color,
-                              size: 22,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  bill['name'] as String,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15.5,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  'Due on ${bill['date']}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 12.5,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            '\$${(bill['amount'] is int) ? (bill['amount'] as int).toDouble().toStringAsFixed(2) : (bill['amount'] as double).toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 15.5,
-                              color: AppColors.error,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
+                    );
+                  },
+                ).toList(),
+          ),
         ),
       ],
     );
@@ -1491,14 +1523,13 @@ class _WalletScreenState extends State<WalletScreen>
                   _transactions.length > 3 ? 3 : _transactions.length,
                   (index) {
                     final transaction = _transactions[index];
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      bottom: 12,
-                    ),
-                    child: _buildTransactionItem(transaction),
-                  );
-                },
-              ).toList(),
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 12),
+                      child: _buildTransactionItem(transaction),
+                    );
+                  },
+                ).toList(),
+          ),
         ),
       ],
     );
@@ -1520,10 +1551,7 @@ class _WalletScreenState extends State<WalletScreen>
         child: Container(
           decoration: BoxDecoration(
             color: AppColors.cardBackground,
-            borderRadius: index == 0 ? const BorderRadius.only(
-              topLeft: Radius.circular(14),
-              topRight: Radius.circular(14),
-            ) : BorderRadius.zero,
+            borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           child: Row(
