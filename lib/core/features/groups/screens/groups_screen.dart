@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../constants/colors.dart';
 import '../models/group.dart';
+import '../widgets/group_activity_feed.dart';
 import 'group_details_screen.dart';
 
 class GroupsScreen extends StatefulWidget {
@@ -11,20 +12,22 @@ class GroupsScreen extends StatefulWidget {
   State<GroupsScreen> createState() => _GroupsScreenState();
 }
 
-class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderStateMixin {
+class _GroupsScreenState extends State<GroupsScreen>
+    with TickerProviderStateMixin {
+  late TabController _tabController;
   late AnimationController _animationController;
   bool _isLoading = true;
   String _filterOption = 'All';
-  final List<String> _filterOptions = ['All', 'You owe', 'Owed to you', 'Settled'];
-  
+
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    
+
     // Simulate loading delay
     Future.delayed(const Duration(milliseconds: 1500), () {
       if (mounted) {
@@ -35,12 +38,14 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
       }
     });
   }
-  
+
   @override
   void dispose() {
     _animationController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
+
   // Mock data for groups
   final List<Group> _groups = [
     Group(
@@ -153,42 +158,83 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
                 ),
                 child: _buildHeader(context),
               ),
+              _buildTabBar(),
               Expanded(
-                child: _isLoading
-                    ? _buildLoadingState()
-                    : FadeTransition(
-                        opacity: _animationController,
-                        child: SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(
-                            parent: BouncingScrollPhysics(),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 8),
-                                _buildGroupSummary(),
-                                const SizedBox(height: 24),
-                                _buildGroupsList(),
-                                const SizedBox(height: 100), // Extra padding for nav bar
-                              ],
-                            ),
+                child:
+                    _isLoading
+                        ? _buildLoadingState()
+                        : FadeTransition(
+                          opacity: _animationController,
+                          child: TabBarView(
+                            controller: _tabController,
+                            children: [
+                              // Groups Tab
+                              SingleChildScrollView(
+                                physics: const AlwaysScrollableScrollPhysics(
+                                  parent: BouncingScrollPhysics(),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 8),
+                                      _buildGroupSummary(),
+                                      const SizedBox(height: 24),
+                                      _buildGroupsList(),
+                                      const SizedBox(
+                                        height: 100,
+                                      ), // Extra padding for nav bar
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              // Activity Tab
+                              const GroupActivityFeed(),
+                            ],
                           ),
                         ),
-                      ),
               ),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Show dialog to create a new group
-          _showCreateGroupDialog(context);
-        },
-        backgroundColor: AppColors.accentGradientEnd,
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Container(
+        margin: const EdgeInsets.only(bottom: 65.0, right: 8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.accentGradientEnd.withValues(alpha: 0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            // Show dialog to create a new group
+            _showCreateGroupDialog(context);
+          },
+          backgroundColor: AppColors.accentGradientEnd,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(color: Colors.white.withOpacity(0.2), width: 1),
+          ),
+          label: const Row(
+            children: [
+              Icon(Icons.add_circle_outline_rounded, size: 20),
+              SizedBox(width: 8),
+              Text('New Group', style: TextStyle(fontWeight: FontWeight.w600)),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -203,10 +249,10 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
             Text(
               'Groups',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 24,
-                  ),
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w900,
+                fontSize: 24,
+              ),
             ),
           ],
         ),
@@ -221,50 +267,39 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
               ),
             ),
             const SizedBox(width: 10),
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.filter_list, color: Colors.white),
-              color: AppColors.cardBackground,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              position: PopupMenuPosition.under,
-              onSelected: (value) {
-                setState(() {
-                  _filterOption = value;
-                });
+            IconButton(
+              onPressed: () {
+                // Show notifications
               },
-              itemBuilder: (context) => _filterOptions
-                  .map((option) => PopupMenuItem<String>(
-                        value: option,
-                        child: Row(
-                          children: [
-                            Icon(
-                              _filterOption == option
-                                  ? Icons.radio_button_checked
-                                  : Icons.radio_button_unchecked,
-                              color: _filterOption == option
-                                  ? AppColors.accentGradientMiddle
-                                  : AppColors.textSecondary,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              option,
-                              style: TextStyle(
-                                color: _filterOption == option
-                                    ? AppColors.textPrimary
-                                    : AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
+              icon: Stack(
+                children: [
+                  const Icon(Icons.notifications, color: Colors.white),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                        color: AppColors.error,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 14,
+                        minHeight: 14,
+                      ),
+                      child: const Text(
+                        '3',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ))
-                  .toList(),
-              iconSize: 24,
-              padding: EdgeInsets.zero,
-              splashRadius: 24,
-              tooltip: 'Filter Groups',
-              elevation: 8,
-              offset: const Offset(0, 8),
-              constraints: const BoxConstraints(minWidth: 180),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               style: IconButton.styleFrom(
                 backgroundColor: AppColors.secondary.withOpacity(0.22),
                 shape: const CircleBorder(),
@@ -281,42 +316,37 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
     double totalBalance = 0;
     for (var group in _groups) {
       for (var member in group.members) {
-        if (member.id == '1') { // Assuming user ID is '1'
+        if (member.id == '1') {
+          // Assuming user ID is '1'
           totalBalance += member.balance;
         }
       }
     }
 
     return Container(
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            AppColors.accentGradientStart,
-            AppColors.accentGradientEnd,
-          ],
+          colors: [AppColors.accentGradientStart, AppColors.accentGradientEnd],
         ),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
-            offset: const Offset(0, 5),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              Icon(
-                Icons.group,
-                color: Colors.white,
-                size: 22,
-              ),
+              Icon(Icons.group, color: Colors.white, size: 22),
               SizedBox(width: 8),
               Text(
                 'Group Summary',
@@ -337,16 +367,16 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
                 children: [
                   const Text(
                     'Total Balance',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     NumberFormat.currency(symbol: '\$').format(totalBalance),
                     style: TextStyle(
-                      color: totalBalance >= 0 ? Colors.white : Colors.redAccent.shade100,
+                      color:
+                          totalBalance >= 0
+                              ? Colors.white
+                              : Colors.redAccent.shade100,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
@@ -358,10 +388,7 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
                 children: [
                   const Text(
                     'Active Groups',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -555,102 +582,102 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
           ),
           const SizedBox(height: 16),
           // Skeleton for group cards
-          ...List.generate(3, (index) => Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: Container(
-              height: 160,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.cardBackground,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
+          ...List.generate(
+            3,
+            (index) => Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Container(
+                height: 160,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: AppColors.cardBackground,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16),
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
-                                shape: BoxShape.circle,
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    height: 18,
-                                    width: 120,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(4),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 18,
+                                      width: 120,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Container(
-                                    height: 12,
-                                    width: 150,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(4),
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      height: 12,
+                                      width: 150,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          height: 1,
-                          color: AppColors.borderPrimary,
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              height: 14,
-                              width: 120,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(4),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Container(height: 1, color: AppColors.borderPrimary),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                height: 14,
+                                width: 120,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
                               ),
-                            ),
-                            Container(
-                              height: 14,
-                              width: 80,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(4),
+                              Container(
+                                height: 14,
+                                width: 80,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          )),
+          ),
         ],
       ),
     );
@@ -673,7 +700,8 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
         );
         return userMember.balance > 0;
       }).toList();
-    } else { // Settled
+    } else {
+      // Settled
       return _groups.where((group) {
         final userMember = group.members.firstWhere(
           (member) => member.id == '1', // Assuming user ID is '1'
@@ -728,12 +756,13 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
     final userMember = group.members.firstWhere(
       (member) => member.id == '1', // Assuming user ID is '1'
     );
-    
+
     final isPositiveBalance = userMember.balance >= 0;
-    final balanceText = isPositiveBalance
-        ? 'You are owed ${NumberFormat.currency(symbol: '\$').format(userMember.balance.abs())}'
-        : 'You owe ${NumberFormat.currency(symbol: '\$').format(userMember.balance.abs())}';
-    
+    final balanceText =
+        isPositiveBalance
+            ? 'You are owed ${NumberFormat.currency(symbol: '\$').format(userMember.balance.abs())}'
+            : 'You owe ${NumberFormat.currency(symbol: '\$').format(userMember.balance.abs())}';
+
     final formattedDate = _formatDate(group.lastActivity);
 
     return Padding(
@@ -741,9 +770,7 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
           onTap: () {
-            // Navigate to group details
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -751,15 +778,20 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
               ),
             );
           },
+          borderRadius: BorderRadius.circular(16),
           child: Container(
             decoration: BoxDecoration(
               color: AppColors.cardBackground,
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.borderPrimary.withOpacity(0.2),
+                width: 1,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.07),
+                  color: Colors.black.withOpacity(0.05),
                   blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -838,9 +870,10 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
-                              color: isPositiveBalance
-                                  ? AppColors.success
-                                  : AppColors.error,
+                              color:
+                                  isPositiveBalance
+                                      ? AppColors.success
+                                      : AppColors.error,
                             ),
                           ),
                           Text(
@@ -857,13 +890,24 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
                       // Member avatars
                       Row(
                         children: [
-                          ...group.members.map((member) => Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: _buildMemberAvatar(member),
-                              )),
+                          ...group.members.map(
+                            (member) => Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: _buildMemberAvatar(member),
+                            ),
+                          ),
                           const Spacer(),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          GroupDetailsScreen(group: group),
+                                ),
+                              );
+                            },
                             icon: const Icon(
                               Icons.arrow_forward_ios,
                               size: 16,
@@ -900,17 +944,10 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
               decoration: BoxDecoration(
                 color: AppColors.accentGradientEnd,
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.cardBackground,
-                  width: 1.5,
-                ),
+                border: Border.all(color: AppColors.cardBackground, width: 1.5),
               ),
               child: const Center(
-                child: Icon(
-                  Icons.star,
-                  size: 8,
-                  color: Colors.white,
-                ),
+                child: Icon(Icons.star, size: 8, color: Colors.white),
               ),
             ),
           ),
@@ -979,7 +1016,10 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.accentGradientMiddle,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -990,91 +1030,266 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
     );
   }
 
+  Widget _buildTabBar() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
+      height: 64,
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.borderPrimary.withOpacity(0.3),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: TabBar(
+        controller: _tabController,
+        indicator: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          gradient: const LinearGradient(
+            colors: [
+              AppColors.accentGradientStart,
+              AppColors.accentGradientEnd,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.accentGradientEnd.withOpacity(0.3),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        labelColor: Colors.white,
+        unselectedLabelColor: AppColors.textSecondary,
+        labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 14,
+        ),
+        tabs: [
+          Tab(
+            icon: const Icon(Icons.group_rounded, size: 20),
+            text: 'Groups',
+            iconMargin: const EdgeInsets.only(bottom: 4),
+            height: 56,
+          ),
+          Tab(
+            icon: const Icon(Icons.insights_rounded, size: 20),
+            text: 'Activity',
+            iconMargin: const EdgeInsets.only(bottom: 4),
+            height: 56,
+          ),
+        ],
+        padding: const EdgeInsets.all(4),
+        dividerColor: Colors.transparent,
+        indicatorSize: TabBarIndicatorSize.tab,
+        splashFactory: NoSplash.splashFactory,
+        overlayColor: MaterialStateProperty.resolveWith<Color>((
+          Set<MaterialState> states,
+        ) {
+          return Colors.transparent;
+        }),
+      ),
+    );
+  }
+
   void _showCreateGroupDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: const Text(
-          'Create New Group',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Group Name',
-                hintStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.7)),
-                filled: true,
-                fillColor: AppColors.background.withOpacity(0.3),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: AppColors.cardBackground,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(
+                color: AppColors.borderPrimary.withOpacity(0.3),
+                width: 1,
               ),
-              style: const TextStyle(color: AppColors.textPrimary),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Add Members:',
+            elevation: 10,
+            title: const Text(
+              'Create New Group',
               style: TextStyle(
                 color: AppColors.textPrimary,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.bold,
               ),
-              textAlign: TextAlign.left,
             ),
-            const SizedBox(height: 8),
-            // Mock member selection UI
-            ...['Jane Smith', 'Mike Johnson', 'Sarah Williams'].map((name) => 
-              CheckboxListTile(
-                value: false,
-                onChanged: (_) {},
-                title: Text(
-                  name,
-                  style: const TextStyle(color: AppColors.textPrimary),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Group templates selection
+                const Text(
+                  'Choose a template or create custom:',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.left,
                 ),
-                activeColor: AppColors.accentGradientMiddle,
-                checkColor: Colors.white,
-                controlAffinity: ListTileControlAffinity.leading,
-                contentPadding: EdgeInsets.zero,
+                const SizedBox(height: 12),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildTemplateOption(
+                        'Roommates',
+                        Icons.home,
+                        Colors.purple,
+                      ),
+                      _buildTemplateOption('Trip', Icons.flight, Colors.blue),
+                      _buildTemplateOption(
+                        'Couple',
+                        Icons.favorite,
+                        Colors.red,
+                      ),
+                      _buildTemplateOption(
+                        'Family',
+                        Icons.family_restroom,
+                        Colors.green,
+                      ),
+                      _buildTemplateOption('Custom', Icons.add, Colors.grey),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Group Name',
+                    hintStyle: TextStyle(
+                      color: AppColors.textSecondary.withOpacity(0.7),
+                    ),
+                    filled: true,
+                    fillColor: AppColors.background.withOpacity(0.3),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: AppColors.borderPrimary.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: AppColors.borderPrimary.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: AppColors.accentGradientMiddle,
+                        width: 1.5,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.group_work_rounded,
+                      color: AppColors.accentGradientMiddle,
+                    ),
+                  ),
+                  style: const TextStyle(color: AppColors.textPrimary),
+                  cursorColor: AppColors.accentGradientMiddle,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Add Members:',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+                const SizedBox(height: 8),
+                // Mock member selection UI
+                ...['Jane Smith', 'Mike Johnson', 'Sarah Williams']
+                    .map(
+                      (name) => CheckboxListTile(
+                        value: false,
+                        onChanged: (_) {},
+                        title: Text(
+                          name,
+                          style: const TextStyle(color: AppColors.textPrimary),
+                        ),
+                        activeColor: AppColors.accentGradientMiddle,
+                        checkColor: Colors.white,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    )
+                    .toList(),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
               ),
-            ).toList(),
+              ElevatedButton(
+                onPressed: () {
+                  // Handle group creation
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.accentGradientMiddle,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('Create'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Widget _buildTemplateOption(String name, IconData icon, Color color) {
+    return GestureDetector(
+      onTap: () {
+        // Handle template selection
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withOpacity(0.3), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 16),
+            const SizedBox(width: 6),
+            Text(
+              name,
+              style: TextStyle(color: color, fontWeight: FontWeight.w500),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Handle group creation
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accentGradientMiddle,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text('Create'),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

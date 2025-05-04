@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../constants/colors.dart';
 import '../models/group.dart';
+import '../models/group_analytics.dart';
+import '../widgets/group_analytics_tab.dart';
+import '../widgets/enhanced_settlements_tab.dart';
+import '../widgets/group_chat_tab.dart';
+import '../widgets/enhanced_expense_dialog.dart';
 
 class GroupDetailsScreen extends StatefulWidget {
   final Group group;
@@ -15,13 +20,13 @@ class GroupDetailsScreen extends StatefulWidget {
   State<GroupDetailsScreen> createState() => _GroupDetailsScreenState();
 }
 
-class _GroupDetailsScreenState extends State<GroupDetailsScreen> with SingleTickerProviderStateMixin {
+class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -56,7 +61,9 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with SingleTick
                   children: [
                     _buildExpensesTab(),
                     _buildMembersTab(),
-                    _buildSettlementsTab(),
+                    EnhancedSettlementsTab(group: widget.group),
+                    GroupAnalyticsTab(analytics: GroupAnalytics.sample()),
+                    GroupChatTab(group: widget.group),
                   ],
                 ),
               ),
@@ -66,8 +73,11 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with SingleTick
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Show dialog to add expense
-          _showAddExpenseDialog(context);
+          // Show enhanced expense dialog
+          showDialog(
+            context: context,
+            builder: (context) => EnhancedExpenseDialog(group: widget.group),
+          );
         },
         backgroundColor: AppColors.accentGradientEnd,
         child: const Icon(Icons.add, color: Colors.white),
@@ -225,8 +235,11 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with SingleTick
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    // Handle add expense
-                    _showAddExpenseDialog(context);
+                    // Show enhanced expense dialog
+                    showDialog(
+                      context: context,
+                      builder: (context) => EnhancedExpenseDialog(group: widget.group),
+                    );
                   },
                   icon: const Icon(Icons.add_circle_outline, size: 16),
                   label: const Text('Add Expense'),
@@ -262,10 +275,13 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with SingleTick
         ),
         labelColor: Colors.white,
         unselectedLabelColor: AppColors.textSecondary,
+        isScrollable: true,
         tabs: const [
           Tab(text: 'Expenses'),
           Tab(text: 'Members'),
           Tab(text: 'Settlements'),
+          Tab(text: 'Analytics'),
+          Tab(text: 'Chat'),
         ],
         padding: const EdgeInsets.all(4),
       ),
@@ -436,113 +452,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with SingleTick
     );
   }
 
-  Widget _buildSettlementsTab() {
-    // Mock settlement data
-    final settlements = [
-      {
-        'from': 'Mike Johnson',
-        'to': 'Jane Smith',
-        'amount': 45.25,
-        'date': DateTime.now().subtract(const Duration(days: 1)),
-        'status': 'Pending',
-      },
-      {
-        'from': 'John Doe',
-        'to': 'Jane Smith',
-        'amount': 30.00,
-        'date': DateTime.now().subtract(const Duration(days: 5)),
-        'status': 'Completed',
-      },
-    ];
-
-    return settlements.isEmpty
-        ? _buildEmptyState('No settlements yet', 'All balances are settled')
-        : ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: settlements.length,
-            itemBuilder: (context, index) {
-              final settlement = settlements[index];
-              final isPending = settlement['status'] == 'Pending';
-              
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                color: AppColors.cardBackground,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(16),
-                  title: Row(
-                    children: [
-                      Text(
-                        '${settlement['from']} → ${settlement['to']}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isPending
-                              ? AppColors.categoryBills.withOpacity(0.2)
-                              : AppColors.success.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          settlement['status'] as String,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: isPending
-                                ? AppColors.categoryBills
-                                : AppColors.success,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 8),
-                      Text(
-                        'Amount: ${NumberFormat.currency(symbol: '\$').format(settlement['amount'])}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Date: ${_formatDate(settlement['date'] as DateTime)}',
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                  trailing: isPending
-                      ? IconButton(
-                          icon: const Icon(
-                            Icons.check_circle_outline,
-                            color: AppColors.success,
-                          ),
-                          onPressed: () {
-                            // Mark as completed
-                          },
-                        )
-                      : null,
-                ),
-              );
-            },
-          );
-  }
+  // The _buildSettlementsTab method has been removed as it's been replaced by the EnhancedSettlementsTab widget
 
   Widget _buildEmptyState(String title, String subtitle) {
     return Center(
@@ -595,121 +505,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with SingleTick
     }
   }
 
-  void _showAddExpenseDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: const Text(
-          'Add Expense',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Description',
-                hintStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.7)),
-                filled: true,
-                fillColor: AppColors.background.withOpacity(0.3),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-              ),
-              style: const TextStyle(color: AppColors.textPrimary),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Amount',
-                hintStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.7)),
-                filled: true,
-                fillColor: AppColors.background.withOpacity(0.3),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                prefixIcon: const Icon(
-                  Icons.attach_money,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              keyboardType: TextInputType.number,
-              style: const TextStyle(color: AppColors.textPrimary),
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                hintText: 'Paid by',
-                hintStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.7)),
-                filled: true,
-                fillColor: AppColors.background.withOpacity(0.3),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-              ),
-              items: widget.group.members
-                  .map((member) => DropdownMenuItem(
-                        value: member.id,
-                        child: Text(
-                          member.id == '1' ? 'You' : member.name,
-                          style: const TextStyle(color: AppColors.textPrimary),
-                        ),
-                      ))
-                  .toList(),
-              onChanged: (value) {},
-              dropdownColor: AppColors.cardBackground,
-              icon: const Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Handle expense creation
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accentGradientMiddle,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-  }
+  // This method is no longer needed as we're using the EnhancedExpenseDialog
 
   void _showGroupSettingsDialog(BuildContext context) {
     showDialog(
