@@ -506,63 +506,110 @@ class _EnhancedSettlementsTabState extends State<EnhancedSettlementsTab> {
   }
   
   void _showPaymentMethodsDialog(BuildContext context, Map<String, dynamic> debt) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: const Text(
-          'Choose Payment Method',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        minChildSize: 0.4,
+        maxChildSize: 0.8,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: AppColors.cardBackground,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 10,
+                spreadRadius: 0,
+                offset: const Offset(0, -2),
+              ),
+            ],
           ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildPaymentMethodItem(
-              icon: Icons.money,
-              title: 'Cash',
-              subtitle: 'Record a cash payment',
-              onTap: () {
-                Navigator.pop(context);
-                // Handle cash payment
-              },
-            ),
-            const Divider(color: AppColors.borderPrimary),
-            _buildPaymentMethodItem(
-              icon: Icons.account_balance,
-              title: 'Bank Transfer',
-              subtitle: 'Pay via bank transfer',
-              onTap: () {
-                Navigator.pop(context);
-                // Handle bank transfer
-              },
-            ),
-            const Divider(color: AppColors.borderPrimary),
-            _buildPaymentMethodItem(
-              icon: Icons.payment,
-              title: 'Venmo',
-              subtitle: 'Pay with Venmo',
-              onTap: () {
-                Navigator.pop(context);
-                // Handle Venmo payment
-              },
-            ),
-            const Divider(color: AppColors.borderPrimary),
-            _buildPaymentMethodItem(
-              icon: Icons.paypal,
-              title: 'PayPal',
-              subtitle: 'Pay with PayPal',
-              onTap: () {
-                Navigator.pop(context);
-                // Handle PayPal payment
-              },
-            ),
-          ],
+          child: Column(
+            children: [
+              // Draggable handle
+              Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.borderPrimary.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Title
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Choose Payment Method',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: AppColors.textSecondary),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              // Payment methods list
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  children: [
+                    _buildPaymentMethodItem(
+                      icon: Icons.money,
+                      title: 'Cash',
+                      subtitle: 'Record a cash payment',
+                      onTap: () {
+                        Navigator.pop(context);
+                        // Handle cash payment
+                      },
+                    ),
+                    const Divider(color: AppColors.borderPrimary),
+                    _buildPaymentMethodItem(
+                      icon: Icons.account_balance,
+                      title: 'Bank Transfer',
+                      subtitle: 'Pay via bank transfer',
+                      onTap: () {
+                        Navigator.pop(context);
+                        // Handle bank transfer
+                      },
+                    ),
+                    const Divider(color: AppColors.borderPrimary),
+                    _buildPaymentMethodItem(
+                      icon: Icons.payment,
+                      title: 'Venmo',
+                      subtitle: 'Pay with Venmo',
+                      onTap: () {
+                        Navigator.pop(context);
+                        // Handle Venmo payment
+                      },
+                    ),
+                    const Divider(color: AppColors.borderPrimary),
+                    _buildPaymentMethodItem(
+                      icon: Icons.paypal,
+                      title: 'PayPal',
+                      subtitle: 'Pay with PayPal',
+                      onTap: () {
+                        Navigator.pop(context);
+                        // Handle PayPal payment
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

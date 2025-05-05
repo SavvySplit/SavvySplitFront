@@ -4,13 +4,13 @@ import '../../../constants/colors.dart';
 import '../models/group.dart';
 import '../models/group_analytics.dart';
 
+
+
 class EnhancedExpenseDialog extends StatefulWidget {
   final Group group;
 
-  const EnhancedExpenseDialog({
-    required this.group,
-    Key? key,
-  }) : super(key: key);
+  const EnhancedExpenseDialog({required this.group, Key? key})
+    : super(key: key);
 
   @override
   State<EnhancedExpenseDialog> createState() => _EnhancedExpenseDialogState();
@@ -21,46 +21,46 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
   final _descriptionController = TextEditingController();
   final _amountController = TextEditingController();
   final _notesController = TextEditingController();
-  
+
   String _selectedCategory = 'Food';
   String _selectedPaidBy = '1'; // Default to current user
   SplitType _splitType = SplitType.equal;
   bool _isRecurring = false;
   RecurringFrequency _recurringFrequency = RecurringFrequency.monthly;
   DateTime _selectedDate = DateTime.now();
-  
+
   final List<String> _categories = [
-    'Food', 
-    'Entertainment', 
-    'Transportation', 
-    'Groceries', 
-    'Utilities', 
-    'Rent', 
-    'Shopping', 
-    'Other'
+    'Food',
+    'Entertainment',
+    'Transportation',
+    'Groceries',
+    'Utilities',
+    'Rent',
+    'Shopping',
+    'Other',
   ];
-  
+
   // Map to store custom split amounts for each member
   final Map<String, double> _customSplits = {};
-  
+
   @override
   void initState() {
     super.initState();
     // Initialize custom splits with equal amounts
     _initializeCustomSplits();
   }
-  
+
   void _initializeCustomSplits() {
     if (_amountController.text.isNotEmpty) {
       final amount = double.tryParse(_amountController.text) ?? 0.0;
       final equalShare = amount / widget.group.members.length;
-      
+
       for (var member in widget.group.members) {
         _customSplits[member.id] = equalShare;
       }
     }
   }
-  
+
   @override
   void dispose() {
     _descriptionController.dispose();
@@ -68,89 +68,155 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
     _notesController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: AppColors.cardBackground,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
+    return DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      expand: false,
+      builder: (context, scrollController) {
+        return Material(
+          color: Colors.transparent,
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.cardBackground,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              border: Border.all(
+                color: AppColors.borderPrimary.withOpacity(0.2),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 15,
+                  offset: Offset(0, -3),
+                ),
+              ],
+            ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(),
-                const SizedBox(height: 16),
-                _buildBasicInfoSection(),
-                const SizedBox(height: 24),
-                _buildSplitSection(),
-                const SizedBox(height: 24),
-                _buildRecurringSection(),
-                const SizedBox(height: 24),
-                _buildAdditionalInfoSection(),
-                const SizedBox(height: 24),
-                _buildActionButtons(context),
+                // Handle bar for dragging
+                Container(
+                  margin: EdgeInsets.only(top: 16, bottom: 8),
+                  width: 48,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.borderPrimary.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                // Header
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Add New Expense',
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 22,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(
+                          Icons.close,
+                          color: AppColors.textSecondary,
+                          size: 24,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildBasicInfoSection(),
+                          const SizedBox(height: 24),
+                          _buildSplitSection(),
+                          const SizedBox(height: 24),
+                          _buildRecurringSection(),
+                          const SizedBox(height: 24),
+                          _buildAdditionalInfoSection(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                // Action buttons
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardBackground,
+                    border: Border(
+                      top: BorderSide(
+                        color: AppColors.borderPrimary.withOpacity(0.2),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            // Handle expense creation
+                            Navigator.pop(context);
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.accentGradientMiddle,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          'Save Expense',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
-  
-  Widget _buildHeader() {
-    return Row(
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: AppColors.accentGradientMiddle.withOpacity(0.2),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.receipt_long,
-            color: AppColors.accentGradientMiddle,
-          ),
-        ),
-        const SizedBox(width: 12),
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Add Expense',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'Enter expense details below',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.close, color: AppColors.textSecondary),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ],
-    );
-  }
-  
+
   Widget _buildBasicInfoSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,7 +234,9 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
           controller: _descriptionController,
           decoration: InputDecoration(
             labelText: 'Description',
-            labelStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.7)),
+            labelStyle: TextStyle(
+              color: AppColors.textSecondary.withOpacity(0.7),
+            ),
             filled: true,
             fillColor: AppColors.background.withOpacity(0.3),
             border: OutlineInputBorder(
@@ -193,7 +261,9 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
           controller: _amountController,
           decoration: InputDecoration(
             labelText: 'Amount',
-            labelStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.7)),
+            labelStyle: TextStyle(
+              color: AppColors.textSecondary.withOpacity(0.7),
+            ),
             filled: true,
             fillColor: AppColors.background.withOpacity(0.3),
             border: OutlineInputBorder(
@@ -226,7 +296,7 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
               setState(() {
                 final amount = double.tryParse(value) ?? 0.0;
                 final equalShare = amount / widget.group.members.length;
-                
+
                 for (var member in widget.group.members) {
                   _customSplits[member.id] = equalShare;
                 }
@@ -238,10 +308,13 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
         Row(
           children: [
             Expanded(
-              child: DropdownButtonFormField<String>(
+child: DropdownButtonFormField<String>(
+                menuMaxHeight: 300,
                 decoration: InputDecoration(
                   labelText: 'Category',
-                  labelStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.7)),
+                  labelStyle: TextStyle(
+                    color: AppColors.textSecondary.withOpacity(0.7),
+                  ),
                   filled: true,
                   fillColor: AppColors.background.withOpacity(0.3),
                   border: OutlineInputBorder(
@@ -253,15 +326,19 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
                     vertical: 14,
                   ),
                 ),
-                items: _categories
-                    .map((category) => DropdownMenuItem(
-                          value: category,
-                          child: Text(
-                            category,
-                            style: const TextStyle(color: AppColors.textPrimary),
-                          ),
-                        ))
-                    .toList(),
+                isExpanded: true,
+                items: _categories.map((category) {
+                  return DropdownMenuItem(
+                    value: category,
+                    child: Text(
+                      category,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }).toList(),
                 value: _selectedCategory,
                 onChanged: (value) {
                   if (value != null) {
@@ -271,15 +348,21 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
                   }
                 },
                 dropdownColor: AppColors.cardBackground,
-                icon: const Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+                icon: const Icon(
+                  Icons.arrow_drop_down,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: DropdownButtonFormField<String>(
+child: DropdownButtonFormField<String>(
+                menuMaxHeight: 300,
                 decoration: InputDecoration(
                   labelText: 'Paid by',
-                  labelStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.7)),
+                  labelStyle: TextStyle(
+                    color: AppColors.textSecondary.withOpacity(0.7),
+                  ),
                   filled: true,
                   fillColor: AppColors.background.withOpacity(0.3),
                   border: OutlineInputBorder(
@@ -291,15 +374,19 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
                     vertical: 14,
                   ),
                 ),
-                items: widget.group.members
-                    .map((member) => DropdownMenuItem(
-                          value: member.id,
-                          child: Text(
-                            member.id == '1' ? 'You' : member.name,
-                            style: const TextStyle(color: AppColors.textPrimary),
-                          ),
-                        ))
-                    .toList(),
+                isExpanded: true,
+                items: widget.group.members.map((member) {
+                  return DropdownMenuItem(
+                    value: member.id,
+                    child: Text(
+                      member.id == '1' ? 'You' : member.name,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }).toList(),
                 value: _selectedPaidBy,
                 onChanged: (value) {
                   if (value != null) {
@@ -309,7 +396,10 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
                   }
                 },
                 dropdownColor: AppColors.cardBackground,
-                icon: const Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+                icon: const Icon(
+                  Icons.arrow_drop_down,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ),
           ],
@@ -337,7 +427,7 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
                 );
               },
             );
-            
+
             if (date != null) {
               setState(() {
                 _selectedDate = date;
@@ -377,7 +467,7 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
       ],
     );
   }
-  
+
   Widget _buildSplitSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -403,64 +493,68 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
         const SizedBox(height: 16),
         if (_splitType != SplitType.equal)
           Column(
-            children: widget.group.members.map((member) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundImage: NetworkImage(member.imageUrl),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        member.id == '1' ? 'You' : member.name,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 14,
+            children:
+                widget.group.members.map((member) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundImage: NetworkImage(member.imageUrl),
                         ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 3,
-                      child: TextFormField(
-                        initialValue: _customSplits[member.id]?.toString() ?? '0.0',
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: AppColors.background.withOpacity(0.3),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            member.id == '1' ? 'You' : member.name,
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 14,
+                            ),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          prefixIcon: _splitType == SplitType.exact
-                              ? const Icon(Icons.attach_money, size: 16, color: AppColors.textSecondary)
-                              : _splitType == SplitType.percentage
-                                  ? const Text(
-                                      '%  ',
-                                      style: TextStyle(color: AppColors.textSecondary),
-                                    )
-                                  : null,
                         ),
-                        keyboardType: TextInputType.number,
-                        style: const TextStyle(color: AppColors.textPrimary),
-                        onChanged: (value) {
-                          final amount = double.tryParse(value) ?? 0.0;
-                          setState(() {
-                            _customSplits[member.id] = amount;
-                          });
-                        },
-                      ),
+                        Expanded(
+                          flex: 3,
+                          child: TextFormField(
+                            initialValue:
+                                _customSplits[member.id]?.toString() ?? '0.0',
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppColors.background.withOpacity(0.3),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              prefixText: _splitType == SplitType.exact
+                                  ? r'$ '  // Dollar sign for exact amounts
+                                  : _splitType == SplitType.percentage
+                                      ? '% '  // Percentage sign for percentages
+                                      : null,
+                              prefixStyle: TextStyle(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                            ),
+                            onChanged: (value) {
+                              final amount = double.tryParse(value) ?? 0.0;
+                              setState(() {
+                                _customSplits[member.id] = amount;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
         if (_splitType == SplitType.equal)
           Padding(
@@ -495,10 +589,10 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
       ],
     );
   }
-  
+
   Widget _buildSplitTypeChip(SplitType type, String label) {
     final isSelected = _splitType == type;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -508,7 +602,10 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.accentGradientMiddle : AppColors.background.withOpacity(0.3),
+          color:
+              isSelected
+                  ? AppColors.accentGradientMiddle
+                  : AppColors.background.withOpacity(0.3),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(
@@ -522,7 +619,7 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
       ),
     );
   }
-  
+
   Widget _buildRecurringSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -557,10 +654,7 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
               const SizedBox(height: 12),
               const Text(
                 'Frequency',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -604,10 +698,10 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
       ],
     );
   }
-  
+
   Widget _buildFrequencyChip(RecurringFrequency frequency, String label) {
     final isSelected = _recurringFrequency == frequency;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -617,7 +711,10 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.accentGradientMiddle : AppColors.background.withOpacity(0.3),
+          color:
+              isSelected
+                  ? AppColors.accentGradientMiddle
+                  : AppColors.background.withOpacity(0.3),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(
@@ -631,7 +728,7 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
       ),
     );
   }
-  
+
   Widget _buildAdditionalInfoSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -649,7 +746,9 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
           controller: _notesController,
           decoration: InputDecoration(
             labelText: 'Notes (optional)',
-            labelStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.7)),
+            labelStyle: TextStyle(
+              color: AppColors.textSecondary.withOpacity(0.7),
+            ),
             filled: true,
             fillColor: AppColors.background.withOpacity(0.3),
             border: OutlineInputBorder(
@@ -703,37 +802,6 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
       ],
     );
   }
-  
-  Widget _buildActionButtons(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text(
-            'Cancel',
-            style: TextStyle(color: AppColors.textSecondary),
-          ),
-        ),
-        const SizedBox(width: 8),
-        ElevatedButton(
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              // Handle expense creation
-              Navigator.pop(context);
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.accentGradientMiddle,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: const Text('Save Expense'),
-        ),
-      ],
-    );
-  }
+
 }
+

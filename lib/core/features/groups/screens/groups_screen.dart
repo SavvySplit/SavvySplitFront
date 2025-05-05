@@ -1104,158 +1104,291 @@ class _GroupsScreenState extends State<GroupsScreen>
   }
 
   void _showCreateGroupDialog(BuildContext context) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder:
-          (context) => AlertDialog(
-            backgroundColor: AppColors.cardBackground,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(
-                color: AppColors.borderPrimary.withOpacity(0.3),
-                width: 1,
-              ),
-            ),
-            elevation: 10,
-            title: const Text(
-              'Create New Group',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Group templates selection
-                const Text(
-                  'Choose a template or create custom:',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.85,
+            minChildSize: 0.5,
+            maxChildSize: 0.95,
+            builder:
+                (context, scrollController) => Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.cardBackground,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                    border: Border.all(
+                      color: AppColors.borderPrimary.withOpacity(0.3),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 10,
+                        offset: const Offset(0, -2),
+                      ),
+                    ],
                   ),
-                  textAlign: TextAlign.left,
-                ),
-                const SizedBox(height: 12),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
+                  child: Column(
                     children: [
-                      _buildTemplateOption(
-                        'Roommates',
-                        Icons.home,
-                        Colors.purple,
+                      // Handle bar for dragging
+                      Container(
+                        margin: const EdgeInsets.only(top: 12, bottom: 8),
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppColors.borderPrimary.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
                       ),
-                      _buildTemplateOption('Trip', Icons.flight, Colors.blue),
-                      _buildTemplateOption(
-                        'Couple',
-                        Icons.favorite,
-                        Colors.red,
+                      // Header
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Create New Group',
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () => Navigator.pop(context),
+                              icon: const Icon(
+                                Icons.close,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      _buildTemplateOption(
-                        'Family',
-                        Icons.family_restroom,
-                        Colors.green,
+                      const Divider(height: 1, color: AppColors.borderPrimary),
+                      // Content
+                      Expanded(
+                        child: ListView(
+                          controller: scrollController,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                          children: [
+                            // Group templates selection
+                            const Text(
+                              'Choose a template or create custom:',
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                            const SizedBox(height: 16),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  _buildTemplateOption(
+                                    'Roommates',
+                                    Icons.home,
+                                    Colors.purple,
+                                  ),
+                                  _buildTemplateOption(
+                                    'Trip',
+                                    Icons.flight,
+                                    Colors.blue,
+                                  ),
+                                  _buildTemplateOption(
+                                    'Couple',
+                                    Icons.favorite,
+                                    Colors.red,
+                                  ),
+                                  _buildTemplateOption(
+                                    'Family',
+                                    Icons.family_restroom,
+                                    Colors.green,
+                                  ),
+                                  _buildTemplateOption(
+                                    'Custom',
+                                    Icons.add,
+                                    Colors.grey,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            TextField(
+                              decoration: InputDecoration(
+                                hintText: 'Group Name',
+                                hintStyle: TextStyle(
+                                  color: AppColors.textSecondary.withOpacity(
+                                    0.7,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: AppColors.background.withOpacity(
+                                  0.3,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: AppColors.borderPrimary.withOpacity(
+                                      0.3,
+                                    ),
+                                    width: 1,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: AppColors.borderPrimary.withOpacity(
+                                      0.3,
+                                    ),
+                                    width: 1,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: AppColors.accentGradientMiddle,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 14,
+                                ),
+                                prefixIcon: const Icon(
+                                  Icons.group_work_rounded,
+                                  color: AppColors.accentGradientMiddle,
+                                ),
+                              ),
+                              style: const TextStyle(
+                                color: AppColors.textPrimary,
+                              ),
+                              cursorColor: AppColors.accentGradientMiddle,
+                            ),
+                            const SizedBox(height: 24),
+                            const Text(
+                              'Add Members:',
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                            const SizedBox(height: 12),
+                            // Mock member selection UI
+                            ...[
+                                  'Jane Smith',
+                                  'Mike Johnson',
+                                  'Sarah Williams',
+                                  'Alex Chen',
+                                  'Taylor Swift',
+                                ]
+                                .map(
+                                  (name) => CheckboxListTile(
+                                    value: false,
+                                    onChanged: (_) {},
+                                    title: Text(
+                                      name,
+                                      style: const TextStyle(
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    ),
+                                    activeColor: AppColors.accentGradientMiddle,
+                                    checkColor: Colors.white,
+                                    controlAffinity:
+                                        ListTileControlAffinity.leading,
+                                    contentPadding: EdgeInsets.zero,
+                                    dense: true,
+                                  ),
+                                )
+                                .toList(),
+                            const SizedBox(height: 32),
+                          ],
+                        ),
                       ),
-                      _buildTemplateOption('Custom', Icons.add, Colors.grey),
+                      // Bottom action buttons
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.cardBackground,
+                          border: Border(
+                            top: BorderSide(
+                              color: AppColors.borderPrimary.withOpacity(0.3),
+                            ),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 8,
+                              offset: const Offset(0, -4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              flex: 2,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // Handle group creation
+                                  Navigator.pop(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.accentGradientEnd,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: const Text(
+                                  'Create Group',
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Group Name',
-                    hintStyle: TextStyle(
-                      color: AppColors.textSecondary.withOpacity(0.7),
-                    ),
-                    filled: true,
-                    fillColor: AppColors.background.withOpacity(0.3),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: AppColors.borderPrimary.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: AppColors.borderPrimary.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: AppColors.accentGradientMiddle,
-                        width: 1.5,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.group_work_rounded,
-                      color: AppColors.accentGradientMiddle,
-                    ),
-                  ),
-                  style: const TextStyle(color: AppColors.textPrimary),
-                  cursorColor: AppColors.accentGradientMiddle,
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Add Members:',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-                const SizedBox(height: 8),
-                // Mock member selection UI
-                ...['Jane Smith', 'Mike Johnson', 'Sarah Williams']
-                    .map(
-                      (name) => CheckboxListTile(
-                        value: false,
-                        onChanged: (_) {},
-                        title: Text(
-                          name,
-                          style: const TextStyle(color: AppColors.textPrimary),
-                        ),
-                        activeColor: AppColors.accentGradientMiddle,
-                        checkColor: Colors.white,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    )
-                    .toList(),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: AppColors.textSecondary),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // Handle group creation
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accentGradientMiddle,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text('Create'),
-              ),
-            ],
           ),
     );
   }

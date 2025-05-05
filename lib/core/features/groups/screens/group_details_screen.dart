@@ -11,18 +11,16 @@ import '../widgets/enhanced_expense_dialog.dart';
 class GroupDetailsScreen extends StatefulWidget {
   final Group group;
 
-  const GroupDetailsScreen({
-    required this.group,
-    super.key,
-  });
+  const GroupDetailsScreen({required this.group, super.key});
 
   @override
   State<GroupDetailsScreen> createState() => _GroupDetailsScreenState();
 }
 
-class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProviderStateMixin {
+class _GroupDetailsScreenState extends State<GroupDetailsScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
-  
+
   @override
   void initState() {
     super.initState();
@@ -71,16 +69,45 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProv
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Show enhanced expense dialog
-          showDialog(
-            context: context,
-            builder: (context) => EnhancedExpenseDialog(group: widget.group),
-          );
-        },
-        backgroundColor: AppColors.accentGradientEnd,
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Container(
+        margin: const EdgeInsets.only(bottom: 65.0, right: 8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.accentGradientEnd.withOpacity(0.4),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            // Show enhanced expense dialog
+            showDialog(
+              context: context,
+              builder: (context) => EnhancedExpenseDialog(group: widget.group),
+            );
+          },
+          backgroundColor: AppColors.accentGradientEnd,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(color: Colors.white.withOpacity(0.2), width: 1),
+          ),
+          label: const Row(
+            children: [
+              Icon(Icons.add_circle_outline_rounded, size: 20),
+              SizedBox(width: 8),
+              Text(
+                'Add Expense',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -98,10 +125,10 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProv
             child: Text(
               widget.group.name,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 22,
-                  ),
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w900,
+                fontSize: 22,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -122,11 +149,12 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProv
     final userMember = widget.group.members.firstWhere(
       (member) => member.id == '1', // Assuming user ID is '1'
     );
-    
+
     final isPositiveBalance = userMember.balance >= 0;
-    final balanceText = isPositiveBalance
-        ? 'You are owed ${NumberFormat.currency(symbol: '\$').format(userMember.balance.abs())}'
-        : 'You owe ${NumberFormat.currency(symbol: '\$').format(userMember.balance.abs())}';
+    final balanceText =
+        isPositiveBalance
+            ? 'You are owed ${NumberFormat.currency(symbol: '\$').format(userMember.balance.abs())}'
+            : 'You owe ${NumberFormat.currency(symbol: '\$').format(userMember.balance.abs())}';
 
     return Container(
       margin: const EdgeInsets.all(16.0),
@@ -154,11 +182,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProv
                   shape: BoxShape.circle,
                 ),
                 child: Center(
-                  child: Icon(
-                    Icons.group,
-                    color: widget.group.color,
-                    size: 24,
-                  ),
+                  child: Icon(Icons.group, color: widget.group.color, size: 24),
                 ),
               ),
               const SizedBox(width: 16),
@@ -193,9 +217,10 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProv
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
-                      color: isPositiveBalance
-                          ? AppColors.success
-                          : AppColors.error,
+                      color:
+                          isPositiveBalance
+                              ? AppColors.success
+                              : AppColors.error,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -238,7 +263,9 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProv
                     // Show enhanced expense dialog
                     showDialog(
                       context: context,
-                      builder: (context) => EnhancedExpenseDialog(group: widget.group),
+                      builder:
+                          (context) =>
+                              EnhancedExpenseDialog(group: widget.group),
                     );
                   },
                   icon: const Icon(Icons.add_circle_outline, size: 16),
@@ -246,9 +273,9 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProv
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: AppColors.accentGradientMiddle,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 4),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
@@ -262,28 +289,88 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProv
 
   Widget _buildTabBar() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+      height: 64,
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.borderPrimary.withOpacity(0.3),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: TabBar(
         controller: _tabController,
         indicator: BoxDecoration(
-          color: AppColors.accentGradientMiddle,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
+          gradient: const LinearGradient(
+            colors: [
+              AppColors.accentGradientStart,
+              AppColors.accentGradientEnd,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.accentGradientEnd.withOpacity(0.3),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         labelColor: Colors.white,
         unselectedLabelColor: AppColors.textSecondary,
-        isScrollable: true,
+        labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 12,
+        ),
+        isScrollable: false,
+        indicatorSize: TabBarIndicatorSize.tab,
+        labelPadding: EdgeInsets.zero,
         tabs: const [
-          Tab(text: 'Expenses'),
-          Tab(text: 'Members'),
-          Tab(text: 'Settlements'),
-          Tab(text: 'Analytics'),
-          Tab(text: 'Chat'),
+          Tab(
+            icon: Icon(Icons.receipt_long_rounded, size: 18),
+            text: 'Expenses',
+            iconMargin: EdgeInsets.only(bottom: 2),
+          ),
+          Tab(
+            icon: Icon(Icons.people_alt_rounded, size: 18),
+            text: 'Members',
+            iconMargin: EdgeInsets.only(bottom: 2),
+          ),
+          Tab(
+            icon: Icon(Icons.account_balance_wallet_rounded, size: 18),
+            text: 'Settle',
+            iconMargin: EdgeInsets.only(bottom: 2),
+          ),
+          Tab(
+            icon: Icon(Icons.insights_rounded, size: 18),
+            text: 'Stats',
+            iconMargin: EdgeInsets.only(bottom: 2),
+          ),
+          Tab(
+            icon: Icon(Icons.chat_rounded, size: 18),
+            text: 'Chat',
+            iconMargin: EdgeInsets.only(bottom: 2),
+          ),
         ],
         padding: const EdgeInsets.all(4),
+        dividerColor: Colors.transparent,
+        splashFactory: NoSplash.splashFactory,
+        overlayColor: MaterialStateProperty.resolveWith<Color>((
+          Set<MaterialState> states,
+        ) {
+          return Colors.transparent;
+        }),
       ),
     );
   }
@@ -317,59 +404,59 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProv
     return expenses.isEmpty
         ? _buildEmptyState('No expenses yet', 'Add an expense to get started')
         : ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: expenses.length,
-            itemBuilder: (context, index) {
-              final expense = expenses[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                color: AppColors.cardBackground,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(16),
-                  title: Text(
-                    expense['title'] as String,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 4),
-                      Text(
-                        'Paid by ${expense['paidBy']} • ${_formatDate(expense['date'] as DateTime)}',
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        expense['category'] as String,
-                        style: TextStyle(
-                          color: AppColors.accentGradientMiddle.withOpacity(0.8),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  trailing: Text(
-                    NumberFormat.currency(symbol: '\$').format(expense['amount']),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                      color: AppColors.textPrimary,
-                    ),
+          padding: const EdgeInsets.all(16),
+          itemCount: expenses.length,
+          itemBuilder: (context, index) {
+            final expense = expenses[index];
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              color: AppColors.cardBackground,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ListTile(
+                contentPadding: const EdgeInsets.all(16),
+                title: Text(
+                  expense['title'] as String,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
                   ),
                 ),
-              );
-            },
-          );
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 4),
+                    Text(
+                      'Paid by ${expense['paidBy']} • ${_formatDate(expense['date'] as DateTime)}',
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      expense['category'] as String,
+                      style: TextStyle(
+                        color: AppColors.accentGradientMiddle.withOpacity(0.8),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                trailing: Text(
+                  NumberFormat.currency(symbol: '\$').format(expense['amount']),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+            );
+          },
+        );
   }
 
   Widget _buildMembersTab() {
@@ -379,7 +466,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProv
       itemBuilder: (context, index) {
         final member = widget.group.members[index];
         final isPositiveBalance = member.balance >= 0;
-        
+
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
           color: AppColors.cardBackground,
@@ -427,12 +514,13 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProv
               member.id == '1'
                   ? 'You'
                   : isPositiveBalance
-                      ? 'Owes you ${NumberFormat.currency(symbol: '\$').format(member.balance.abs())}'
-                      : 'You owe ${NumberFormat.currency(symbol: '\$').format(member.balance.abs())}',
+                  ? 'Owes you ${NumberFormat.currency(symbol: '\$').format(member.balance.abs())}'
+                  : 'You owe ${NumberFormat.currency(symbol: '\$').format(member.balance.abs())}',
               style: TextStyle(
-                color: member.id == '1'
-                    ? AppColors.textSecondary
-                    : isPositiveBalance
+                color:
+                    member.id == '1'
+                        ? AppColors.textSecondary
+                        : isPositiveBalance
                         ? AppColors.success
                         : AppColors.error,
               ),
@@ -510,81 +598,88 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> with TickerProv
   void _showGroupSettingsDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => SimpleDialog(
-        backgroundColor: AppColors.cardBackground,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: const Text(
-          'Group Settings',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        children: [
-          SimpleDialogOption(
-            onPressed: () {
-              Navigator.pop(context);
-              // Handle edit group
-            },
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: const Row(
-              children: [
-                Icon(Icons.edit, color: AppColors.textSecondary),
-                SizedBox(width: 16),
-                Text(
-                  'Edit Group',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
+      builder:
+          (context) => SimpleDialog(
+            backgroundColor: AppColors.cardBackground,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-          ),
-          SimpleDialogOption(
-            onPressed: () {
-              Navigator.pop(context);
-              // Handle add member
-            },
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: const Row(
-              children: [
-                Icon(Icons.person_add, color: AppColors.textSecondary),
-                SizedBox(width: 16),
-                Text(
-                  'Add Member',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
+            title: const Text(
+              'Group Settings',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          SimpleDialogOption(
-            onPressed: () {
-              Navigator.pop(context);
-              // Handle leave group
-            },
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: const Row(
-              children: [
-                Icon(Icons.exit_to_app, color: AppColors.error),
-                SizedBox(width: 16),
-                Text(
-                  'Leave Group',
-                  style: TextStyle(
-                    color: AppColors.error,
-                    fontSize: 16,
-                  ),
+            children: [
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  // Handle edit group
+                },
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
                 ),
-              ],
-            ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.edit, color: AppColors.textSecondary),
+                    SizedBox(width: 16),
+                    Text(
+                      'Edit Group',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  // Handle add member
+                },
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.person_add, color: AppColors.textSecondary),
+                    SizedBox(width: 16),
+                    Text(
+                      'Add Member',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  // Handle leave group
+                },
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.exit_to_app, color: AppColors.error),
+                    SizedBox(width: 16),
+                    Text(
+                      'Leave Group',
+                      style: TextStyle(color: AppColors.error, fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }
