@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../../constants/colors.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
@@ -953,9 +954,8 @@ class _DashboardScreenState extends State<DashboardScreen>
         'colorStart': AppColors.accentGradientStart,
         'colorEnd': AppColors.accentGradientEnd,
         'onTap': () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Navigate to Add Expense')),
-          );
+          // Navigate to groups screen to add an expense
+          context.go('/groups');
         },
       },
       {
@@ -964,9 +964,8 @@ class _DashboardScreenState extends State<DashboardScreen>
         'colorStart': AppColors.success,
         'colorEnd': AppColors.success,
         'onTap': () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Navigate to Add Income')),
-          );
+          // Navigate to wallet screen to add income
+          context.go('/wallet');
         },
       },
       {
@@ -975,9 +974,8 @@ class _DashboardScreenState extends State<DashboardScreen>
         'colorStart': AppColors.secondary,
         'colorEnd': AppColors.accentGradientEnd,
         'onTap': () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Navigate to Split Bill')),
-          );
+          // Navigate to groups screen to split a bill
+          context.go('/groups');
         },
       },
       {
@@ -986,9 +984,8 @@ class _DashboardScreenState extends State<DashboardScreen>
         'colorStart': const Color(0xFF8A2BE2), // Purple color start
         'colorEnd': const Color(0xFF4B0082), // Purple color end (indigo)
         'onTap': () {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Navigate to Budget')));
+          // Navigate to budget screen
+          context.go('/budget');
         },
       },
     ];
