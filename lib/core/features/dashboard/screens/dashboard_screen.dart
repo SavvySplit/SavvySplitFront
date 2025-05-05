@@ -15,9 +15,6 @@ import '../widgets/ai_insights_card.dart';
 
 // Data architecture
 import '../../../../data/models/activity.dart';
-import '../../../../data/models/expense_category.dart';
-import '../../../../data/models/financial_progress_item.dart';
-import '../../../../data/models/insight.dart';
 import '../../../../data/providers/dashboard_provider.dart';
 
 class DashboardScreen extends StatefulWidget {

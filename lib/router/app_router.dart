@@ -13,6 +13,7 @@ import '../core/features/goals/screens/goals_screen.dart';
 import '../core/features/groups/screens/groups_screen.dart';
 import '../core/features/settings/screens/settings_screen.dart';
 import '../core/features/settings/screens/account_information_screen.dart';
+import '../core/features/settings/screens/personal_information_screen.dart';
 import '../core/features/wallet/screens/wallet_screen.dart';
 import '../core/providers/tab_provider.dart';
 import '../core/widgets/main_scaffold.dart';
@@ -102,6 +103,10 @@ final GoRouter router = GoRouter(
             GoRoute(
               path: 'account-information',
               builder: (context, state) => const AccountInformationScreen(),
+            ),
+            GoRoute(
+              path: 'personal-information',
+              builder: (context, state) => const PersonalInformationScreen(),
             ),
           ],
         ),
