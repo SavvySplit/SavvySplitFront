@@ -69,46 +69,6 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen>
           ),
         ),
       ),
-      floatingActionButton: Container(
-        margin: const EdgeInsets.only(bottom: 65.0, right: 8.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.accentGradientEnd.withOpacity(0.4),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-              spreadRadius: 2,
-            ),
-          ],
-        ),
-        child: FloatingActionButton.extended(
-          onPressed: () {
-            // Show enhanced expense dialog
-            showDialog(
-              context: context,
-              builder: (context) => EnhancedExpenseDialog(group: widget.group),
-            );
-          },
-          backgroundColor: AppColors.accentGradientEnd,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: BorderSide(color: Colors.white.withOpacity(0.2), width: 1),
-          ),
-          label: const Row(
-            children: [
-              Icon(Icons.add_circle_outline_rounded, size: 20),
-              SizedBox(width: 8),
-              Text(
-                'Add Expense',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 

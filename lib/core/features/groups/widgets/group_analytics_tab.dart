@@ -7,10 +7,8 @@ import '../models/group_analytics.dart';
 class GroupAnalyticsTab extends StatefulWidget {
   final GroupAnalytics analytics;
 
-  const GroupAnalyticsTab({
-    required this.analytics,
-    Key? key,
-  }) : super(key: key);
+  const GroupAnalyticsTab({required this.analytics, Key? key})
+    : super(key: key);
 
   @override
   State<GroupAnalyticsTab> createState() => _GroupAnalyticsTabState();
@@ -18,35 +16,77 @@ class GroupAnalyticsTab extends StatefulWidget {
 
 class _GroupAnalyticsTabState extends State<GroupAnalyticsTab> {
   String _selectedTimeRange = 'Last 30 days';
-  final List<String> _timeRanges = ['Last 7 days', 'Last 30 days', 'Last 3 months', 'Last year'];
-  
+  final List<String> _timeRanges = [
+    'Last 7 days',
+    'Last 30 days',
+    'Last 3 months',
+    'Last year',
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.gradientStart, AppColors.gradientEnd],
+        ),
+      ),
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        physics: const BouncingScrollPhysics(),
+        children: [
+          _buildHeader(),
+          const SizedBox(height: 16),
+          _buildTimeRangeSelector(),
+          const SizedBox(height: 24),
+          _buildSpendingTrendsCard(),
+          const SizedBox(height: 16),
+          _buildCategoryBreakdownCard(),
+          const SizedBox(height: 16),
+          _buildMemberContributionsCard(),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildTimeRangeSelector(),
-        const SizedBox(height: 24),
-        _buildSpendingTrendsCard(),
-        const SizedBox(height: 24),
-        _buildCategoryBreakdownCard(),
-        const SizedBox(height: 24),
-        _buildMemberContributionsCard(),
-        const SizedBox(height: 100), // Extra padding for bottom nav
+        // Text(
+        //   'Group Analytics',
+        //   style: TextStyle(
+        //     color: Colors.white,
+        //     fontSize: 24,
+        //     fontWeight: FontWeight.bold,
+        //     letterSpacing: 0.5,
+        //   ),
+        // ),
+        // const SizedBox(height: 4),
+        Text(
+          'Track and analyze group spending patterns',
+          style: TextStyle(color: Colors.white70, fontSize: 14),
+        ),
       ],
     );
   }
 
   Widget _buildTimeRangeSelector() {
     return Container(
-      height: 40,
+      height: 50,
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: _timeRanges.length,
+        physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) {
           final isSelected = _timeRanges[index] == _selectedTimeRange;
           return GestureDetector(
@@ -55,20 +95,44 @@ class _GroupAnalyticsTabState extends State<GroupAnalyticsTab> {
                 _selectedTimeRange = _timeRanges[index];
               });
             },
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
               margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.accentGradientMiddle : Colors.transparent,
-                borderRadius: BorderRadius.circular(16),
+                gradient:
+                    isSelected
+                        ? const LinearGradient(
+                          colors: [
+                            AppColors.accentGradientStart,
+                            AppColors.accentGradientEnd,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        )
+                        : null,
+                color: isSelected ? null : Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow:
+                    isSelected
+                        ? [
+                          BoxShadow(
+                            color: AppColors.accentGradientEnd.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                        : null,
               ),
               child: Center(
                 child: Text(
                   _timeRanges[index],
                   style: TextStyle(
-                    color: isSelected ? Colors.white : AppColors.textSecondary,
+                    color: isSelected ? Colors.white : Colors.white70,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                     fontSize: 14,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
@@ -80,48 +144,82 @@ class _GroupAnalyticsTabState extends State<GroupAnalyticsTab> {
   }
 
   Widget _buildSpendingTrendsCard() {
-    return Card(
-      color: AppColors.cardBackground,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  width: 3,
-                  height: 20,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
-                    color: AppColors.accentGradientMiddle,
+                    gradient: const LinearGradient(
+                      colors: [
+                        AppColors.accentGradientStart,
+                        AppColors.accentGradientEnd,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  child: const Icon(
+                    Icons.trending_up_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 const Text(
                   'Spending Trends',
                   style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    letterSpacing: 0.5,
                   ),
                 ),
                 const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.info_outline, size: 20, color: AppColors.textSecondary),
-                  onPressed: () {
-                    // Show info tooltip
-                  },
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    _selectedTimeRange,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ],
             ),
+            const SizedBox(height: 8),
+            const Divider(color: Colors.white10, height: 24),
             const SizedBox(height: 24),
             SizedBox(
-              height: 200,
+              height: 220,
               child: LineChart(
                 LineChartData(
                   gridData: FlGridData(
@@ -130,7 +228,7 @@ class _GroupAnalyticsTabState extends State<GroupAnalyticsTab> {
                     horizontalInterval: 50,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: AppColors.borderPrimary,
+                        color: Colors.white.withOpacity(0.05),
                         strokeWidth: 1,
                       );
                     },
@@ -149,10 +247,16 @@ class _GroupAnalyticsTabState extends State<GroupAnalyticsTab> {
                         reservedSize: 30,
                         interval: 1,
                         getTitlesWidget: (value, meta) {
-                          if (value.toInt() >= widget.analytics.spendingTrends.length || value.toInt() < 0) {
+                          if (value.toInt() >=
+                                  widget.analytics.spendingTrends.length ||
+                              value.toInt() < 0) {
                             return const SizedBox();
                           }
-                          final date = widget.analytics.spendingTrends[value.toInt()].date;
+                          final date =
+                              widget
+                                  .analytics
+                                  .spendingTrends[value.toInt()]
+                                  .date;
                           return Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text(
@@ -174,16 +278,16 @@ class _GroupAnalyticsTabState extends State<GroupAnalyticsTab> {
                       ),
                     ),
                   ),
-                  borderData: FlBorderData(
-                    show: false,
-                  ),
+                  borderData: FlBorderData(show: false),
                   minX: 0,
                   maxX: widget.analytics.spendingTrends.length.toDouble() - 1,
                   minY: 0,
-                  maxY: widget.analytics.spendingTrends
-                      .map((e) => e.amount)
-                      .reduce((a, b) => a > b ? a : b)
-                      .ceilToDouble() + 50,
+                  maxY:
+                      widget.analytics.spendingTrends
+                          .map((e) => e.amount)
+                          .reduce((a, b) => a > b ? a : b)
+                          .ceilToDouble() +
+                      50,
                   lineBarsData: [
                     LineChartBarData(
                       spots: List.generate(
@@ -231,16 +335,16 @@ class _GroupAnalyticsTabState extends State<GroupAnalyticsTab> {
             ),
             const SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildStatCard(
                   'Total Spent',
                   '\$${widget.analytics.spendingTrends.map((e) => e.amount).reduce((a, b) => a + b).toStringAsFixed(2)}',
                   Icons.account_balance_wallet,
                 ),
-                const SizedBox(width: 16),
                 _buildStatCard(
-                  'Avg. per Day',
+                  'Avg/Day',
                   '\$${(widget.analytics.spendingTrends.map((e) => e.amount).reduce((a, b) => a + b) / widget.analytics.spendingTrends.length).toStringAsFixed(2)}',
                   Icons.trending_up,
                 ),
@@ -256,152 +360,74 @@ class _GroupAnalyticsTabState extends State<GroupAnalyticsTab> {
     final total = widget.analytics.categoryBreakdown
         .map((e) => e.amount)
         .reduce((a, b) => a + b);
+    final numberFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
 
-    return Card(
-      color: AppColors.cardBackground,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  width: 3,
-                  height: 20,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
-                    color: AppColors.accentGradientMiddle,
+                    gradient: const LinearGradient(
+                      colors: [
+                        AppColors.accentGradientStart,
+                        AppColors.accentGradientEnd,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  child: const Icon(
+                    Icons.category_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 const Text(
                   'Category Breakdown',
                   style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: SizedBox(
-                    height: 200,
-                    child: PieChart(
-                      PieChartData(
-                        sectionsSpace: 2,
-                        centerSpaceRadius: 40,
-                        sections: widget.analytics.categoryBreakdown
-                            .map((category) => PieChartSectionData(
-                                  value: category.amount,
-                                  color: category.color,
-                                  title: '${((category.amount / total) * 100).toStringAsFixed(0)}%',
-                                  radius: 80,
-                                  titleStyle: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ))
-                            .toList(),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: Column(
-                    children: widget.analytics.categoryBreakdown
-                        .map((category) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 6.0),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 12,
-                                    height: 12,
-                                    decoration: BoxDecoration(
-                                      color: category.color,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      category.name,
-                                      style: const TextStyle(
-                                        color: AppColors.textPrimary,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    '\$${category.amount.toStringAsFixed(2)}',
-                                    style: const TextStyle(
-                                      color: AppColors.textPrimary,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ))
-                        .toList(),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMemberContributionsCard() {
-    return Card(
-      color: AppColors.cardBackground,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 3,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: AppColors.accentGradientMiddle,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  'Member Contributions',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            ...widget.analytics.memberContributions
-                .map((member) => _buildMemberContributionItem(member))
-                .toList(),
+            const SizedBox(height: 8),
+            const Divider(color: Colors.white10, height: 24),
+            const SizedBox(height: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 220),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWide = constraints.maxWidth > 400;
+                  return isWide 
+                    ? _buildWideCategoryLayout(total, numberFormat)
+                    : _buildNarrowCategoryLayout(total, numberFormat);
+                },
+              ),
+            )
           ],
         ),
       ),
@@ -413,7 +439,8 @@ class _GroupAnalyticsTabState extends State<GroupAnalyticsTab> {
     final totalGroupContribution = widget.analytics.memberContributions
         .map((e) => e.totalContribution)
         .reduce((a, b) => a + b);
-    final percentage = (member.totalContribution / totalGroupContribution) * 100;
+    final percentage =
+        (member.totalContribution / totalGroupContribution) * 100;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -425,11 +452,7 @@ class _GroupAnalyticsTabState extends State<GroupAnalyticsTab> {
               const CircleAvatar(
                 radius: 16,
                 backgroundColor: AppColors.accentGradientMiddle,
-                child: Icon(
-                  Icons.person,
-                  size: 16,
-                  color: Colors.white,
-                ),
+                child: Icon(Icons.person, size: 16, color: Colors.white),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -472,7 +495,9 @@ class _GroupAnalyticsTabState extends State<GroupAnalyticsTab> {
             child: LinearProgressIndicator(
               value: percentage / 100,
               backgroundColor: AppColors.borderPrimary,
-              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentGradientMiddle),
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                AppColors.accentGradientMiddle,
+              ),
               minHeight: 8,
             ),
           ),
@@ -483,36 +508,285 @@ class _GroupAnalyticsTabState extends State<GroupAnalyticsTab> {
     );
   }
 
+  Widget _buildMemberContributionsCard() {
+    if (widget.analytics.memberContributions.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: const Center(
+          child: Text(
+            'No member contributions to show',
+            style: TextStyle(color: Colors.white70),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        AppColors.accentGradientStart,
+                        AppColors.accentGradientEnd,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.people_alt_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Member Contributions',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(color: Colors.white10, height: 1),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: widget.analytics.memberContributions
+                  .map((member) => _buildMemberContributionItem(member))
+                  .toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWideCategoryLayout(double total, NumberFormat numberFormat) {
+    return SizedBox(
+      height: 220,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Flexible(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: PieChart(
+                  PieChartData(
+                    sectionsSpace: 0,
+                    centerSpaceRadius: 24,
+                    sections: widget.analytics.categoryBreakdown.map((category) {
+                      final percentage = (category.amount / total) * 100;
+                      return PieChartSectionData(
+                        value: category.amount,
+                        color: category.color,
+                        title: percentage >= 5 ? '${percentage.toStringAsFixed(0)}%' : '',
+                        radius: 50,
+                        titleStyle: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            flex: 3,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: _buildCategoryLegend(total, numberFormat),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNarrowCategoryLayout(double total, NumberFormat numberFormat) {
+    return SizedBox(
+      height: 400,
+      child: Column(
+        children: [
+          SizedBox(
+            height: 160,
+            child: PieChart(
+              PieChartData(
+                sectionsSpace: 0,
+                centerSpaceRadius: 30,
+                sections: widget.analytics.categoryBreakdown.map((category) {
+                  final percentage = (category.amount / total) * 100;
+                  return PieChartSectionData(
+                    value: category.amount,
+                    color: category.color,
+                    title: percentage >= 5 ? '${percentage.toStringAsFixed(0)}%' : '',
+                    radius: 50,
+                    titleStyle: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: _buildCategoryLegend(total, numberFormat),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryLegend(double total, NumberFormat numberFormat) {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      shrinkWrap: true,
+      itemCount: widget.analytics.categoryBreakdown.length,
+      itemBuilder: (context, index) {
+        final category = widget.analytics.categoryBreakdown[index];
+        final percentage = (category.amount / total) * 100;
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: category.color,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: category.color.withOpacity(0.5),
+                      blurRadius: 2,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  category.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '${percentage.toStringAsFixed(0)}%',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                numberFormat.format(category.amount),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildStatCard(String title, String value, IconData icon) {
-    return Expanded(
+    return Flexible(
       child: Container(
-        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: AppColors.background.withOpacity(0.3),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: AppColors.accentGradientMiddle,
-              size: 20,
-            ),
-            const SizedBox(height: 8),
+            Icon(icon, color: AppColors.accentGradientMiddle, size: 18),
+            const SizedBox(height: 6),
             Text(
               title,
               style: const TextStyle(
                 color: AppColors.textSecondary,
-                fontSize: 12,
+                fontSize: 11,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
+            const SizedBox(height: 2),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

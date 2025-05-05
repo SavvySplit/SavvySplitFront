@@ -4,8 +4,6 @@ import '../../../constants/colors.dart';
 import '../models/group.dart';
 import '../models/group_analytics.dart';
 
-
-
 class EnhancedExpenseDialog extends StatefulWidget {
   final Group group;
 
@@ -308,7 +306,7 @@ class _EnhancedExpenseDialogState extends State<EnhancedExpenseDialog> {
         Row(
           children: [
             Expanded(
-child: DropdownButtonFormField<String>(
+              child: DropdownButtonFormField<String>(
                 menuMaxHeight: 300,
                 decoration: InputDecoration(
                   labelText: 'Category',
@@ -327,18 +325,17 @@ child: DropdownButtonFormField<String>(
                   ),
                 ),
                 isExpanded: true,
-                items: _categories.map((category) {
-                  return DropdownMenuItem(
-                    value: category,
-                    child: Text(
-                      category,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  );
-                }).toList(),
+                items:
+                    _categories.map((category) {
+                      return DropdownMenuItem(
+                        value: category,
+                        child: Text(
+                          category,
+                          style: const TextStyle(color: AppColors.textPrimary),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      );
+                    }).toList(),
                 value: _selectedCategory,
                 onChanged: (value) {
                   if (value != null) {
@@ -356,7 +353,7 @@ child: DropdownButtonFormField<String>(
             ),
             const SizedBox(width: 12),
             Expanded(
-child: DropdownButtonFormField<String>(
+              child: DropdownButtonFormField<String>(
                 menuMaxHeight: 300,
                 decoration: InputDecoration(
                   labelText: 'Paid by',
@@ -375,18 +372,17 @@ child: DropdownButtonFormField<String>(
                   ),
                 ),
                 isExpanded: true,
-                items: widget.group.members.map((member) {
-                  return DropdownMenuItem(
-                    value: member.id,
-                    child: Text(
-                      member.id == '1' ? 'You' : member.name,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  );
-                }).toList(),
+                items:
+                    widget.group.members.map((member) {
+                      return DropdownMenuItem(
+                        value: member.id,
+                        child: Text(
+                          member.id == '1' ? 'You' : member.name,
+                          style: const TextStyle(color: AppColors.textPrimary),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      );
+                    }).toList(),
                 value: _selectedPaidBy,
                 onChanged: (value) {
                   if (value != null) {
@@ -530,10 +526,11 @@ child: DropdownButtonFormField<String>(
                                 horizontal: 12,
                                 vertical: 8,
                               ),
-                              prefixText: _splitType == SplitType.exact
-                                  ? r'$ '  // Dollar sign for exact amounts
-                                  : _splitType == SplitType.percentage
-                                      ? '% '  // Percentage sign for percentages
+                              prefixText:
+                                  _splitType == SplitType.exact
+                                      ? r'$ ' // Dollar sign for exact amounts
+                                      : _splitType == SplitType.percentage
+                                      ? '% ' // Percentage sign for percentages
                                       : null,
                               prefixStyle: TextStyle(
                                 color: AppColors.textSecondary,
@@ -802,6 +799,4 @@ child: DropdownButtonFormField<String>(
       ],
     );
   }
-
 }
-
