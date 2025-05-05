@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../constants/colors.dart';
+import 'account_information_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -14,10 +15,7 @@ class SettingsScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.gradientStart,
-              AppColors.gradientEnd,
-            ],
+            colors: [AppColors.gradientStart, AppColors.gradientEnd],
           ),
         ),
         child: SafeArea(
@@ -97,15 +95,17 @@ class SettingsScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Text(
         'Settings',
-        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-          color: AppColors.textPrimary,
-          fontWeight: FontWeight.w900,
-          fontSize: 24,
-        ) ?? const TextStyle(
-          color: AppColors.textPrimary,
-          fontWeight: FontWeight.w900,
-          fontSize: 22,
-        ),
+        style:
+            Theme.of(context).textTheme.headlineMedium?.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w900,
+              fontSize: 24,
+            ) ??
+            const TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w900,
+              fontSize: 22,
+            ),
       ),
     );
   }
@@ -126,7 +126,7 @@ class SettingsScreen extends StatelessWidget {
             children: [
               ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.tealAccent.withOpacity(0.2),
+                  backgroundColor: Colors.tealAccent.withValues(alpha: 0.2),
                   child: const Icon(Icons.person, color: Colors.tealAccent),
                 ),
                 title: const Text(
@@ -141,7 +141,9 @@ class SettingsScreen extends StatelessWidget {
                   color: Colors.white54,
                   size: 16,
                 ),
-                onTap: () {},
+                onTap: () {
+                  context.push('/settings/account-information');
+                },
               ),
               const Divider(
                 color: Colors.white10,
@@ -151,7 +153,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.purpleAccent.withOpacity(0.2),
+                  backgroundColor: Colors.purpleAccent.withValues(alpha: 0.2),
                   child: const Icon(
                     Icons.notifications,
                     color: Colors.purpleAccent,
@@ -169,7 +171,9 @@ class SettingsScreen extends StatelessWidget {
                   color: Colors.white54,
                   size: 16,
                 ),
-                onTap: () {},
+                onTap: () {
+                  context.push('/notifications');
+                },
               ),
             ],
           ),
@@ -194,7 +198,7 @@ class SettingsScreen extends StatelessWidget {
             children: [
               ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.blueAccent.withOpacity(0.2),
+                  backgroundColor: Colors.blueAccent.withValues(alpha: 0.2),
                   child: const Icon(Icons.language, color: Colors.blueAccent),
                 ),
                 title: const Text(
@@ -223,7 +227,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.amberAccent.withOpacity(0.2),
+                  backgroundColor: Colors.amberAccent.withValues(alpha: 0.2),
                   child: const Icon(
                     Icons.currency_exchange,
                     color: Colors.amberAccent,
@@ -255,7 +259,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               SwitchListTile(
                 secondary: CircleAvatar(
-                  backgroundColor: Colors.tealAccent.withOpacity(0.2),
+                  backgroundColor: Colors.tealAccent.withValues(alpha: 0.2),
                   child: const Icon(Icons.dark_mode, color: Colors.tealAccent),
                 ),
                 title: const Text(
@@ -292,8 +296,11 @@ class SettingsScreen extends StatelessWidget {
             children: [
               ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.blueAccent.withOpacity(0.2),
-                  child: const Icon(Icons.account_balance, color: Colors.blueAccent),
+                  backgroundColor: Colors.blueAccent.withValues(alpha: 0.2),
+                  child: const Icon(
+                    Icons.account_balance,
+                    color: Colors.blueAccent,
+                  ),
                 ),
                 title: const Text(
                   'Bank Accounts',
@@ -321,8 +328,11 @@ class SettingsScreen extends StatelessWidget {
               ),
               ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.purpleAccent.withOpacity(0.2),
-                  child: const Icon(Icons.credit_card, color: Colors.purpleAccent),
+                  backgroundColor: Colors.purpleAccent.withValues(alpha: 0.2),
+                  child: const Icon(
+                    Icons.credit_card,
+                    color: Colors.purpleAccent,
+                  ),
                 ),
                 title: const Text(
                   'Payment Methods',
@@ -350,8 +360,11 @@ class SettingsScreen extends StatelessWidget {
               ),
               ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.greenAccent.withOpacity(0.2),
-                  child: const Icon(Icons.add_circle_outline, color: Colors.greenAccent),
+                  backgroundColor: Colors.greenAccent.withValues(alpha: 0.2),
+                  child: const Icon(
+                    Icons.add_circle_outline,
+                    color: Colors.greenAccent,
+                  ),
                 ),
                 title: const Text(
                   'Connect New Service',
@@ -390,7 +403,7 @@ class SettingsScreen extends StatelessWidget {
             children: [
               ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.amberAccent.withOpacity(0.2),
+                  backgroundColor: Colors.amberAccent.withValues(alpha: 0.2),
                   child: const Icon(Icons.backup, color: Colors.amberAccent),
                 ),
                 title: const Text(
@@ -419,7 +432,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.tealAccent.withOpacity(0.2),
+                  backgroundColor: Colors.tealAccent.withValues(alpha: 0.2),
                   child: const Icon(Icons.download, color: Colors.tealAccent),
                 ),
                 title: const Text(
@@ -444,8 +457,11 @@ class SettingsScreen extends StatelessWidget {
               ),
               ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.redAccent.withOpacity(0.2),
-                  child: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                  backgroundColor: Colors.redAccent.withValues(alpha: 0.2),
+                  child: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.redAccent,
+                  ),
                 ),
                 title: const Text(
                   'Delete Account',
@@ -484,7 +500,7 @@ class SettingsScreen extends StatelessWidget {
             children: [
               ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.redAccent.withOpacity(0.2),
+                  backgroundColor: Colors.redAccent.withValues(alpha: 0.2),
                   child: const Icon(Icons.lock, color: Colors.redAccent),
                 ),
                 title: const Text(
@@ -665,7 +681,10 @@ class SettingsScreen extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.amberAccent,
                             borderRadius: BorderRadius.circular(12),
@@ -727,7 +746,10 @@ class SettingsScreen extends StatelessWidget {
               ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.purpleAccent.withOpacity(0.2),
-                  child: const Icon(Icons.card_membership, color: Colors.purpleAccent),
+                  child: const Icon(
+                    Icons.card_membership,
+                    color: Colors.purpleAccent,
+                  ),
                 ),
                 title: const Text(
                   'Subscription Management',
@@ -741,7 +763,9 @@ class SettingsScreen extends StatelessWidget {
                   color: Colors.white54,
                   size: 16,
                 ),
-                onTap: () {},
+                onTap: () {
+                  context.push('/subscription-management');
+                },
               ),
               const Divider(
                 color: Colors.white10,
